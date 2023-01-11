@@ -36,17 +36,43 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
           "name LIKE '%test%' AND num_employees >= 1 AND num_employees <= 10"
  */
 function sqlForCompanySearchFilter({nameLike, minEmployees, maxEmployees}) {
+  let query = {
+    values: []
+  }
+
   let filterElems = [];
 
+  let placeholderCount = 1;
+
   if (nameLike) {
-    filterElems.push(`LOWER( name ) LIKE '%${nameLike.toLowerCase()}%'`);
+    filterElems.push(`LOWER( name ) LIKE $${placeholderCount}`);
+    query.values.push(`%${nameLike.toLowerCase()}%`);
+    placeholderCount++;
   }
-  if (minEmployees) filterElems.push(`num_employees >= ${minEmployees}`);
-  if (maxEmployees) filterElems.push(`num_employees <= ${maxEmployees}`);
+  if (minEmployees) {
+    filterElems.push(`num_employees >= $${placeholderCount}`);
+    query.values.push(minEmployees);
+    placeholderCount++;
+  }
+  if (maxEmployees) {
+    filterElems.push(`num_employees <= $${placeholderCount}`);
+    query.values.push(maxEmployees);
+    placeholderCount++;
+  }
 
-  console.log(filterElems.join(" AND "))
-
-  return filterElems.join(" AND ");
+  const filter = filterElems.join(" AND ");
+  query.text = `SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies WHERE ${filter} ORDER BY name`
+  // query.text = `
+  //   SELECT handle,
+  //          name,
+  //          description,
+  //          num_employees AS "numEmployees",
+  //          logo_url AS "logoUrl"
+  //   FROM companies
+  //     WHERE ${filter} 
+  //   ORDER BY name
+  // `
+  return query;
 }
 
 

@@ -66,17 +66,13 @@ class Company {
     return companiesRes.rows;
   }
 
-  static async filterAll(filter) {
+  static async filterAll(filterQuery) {
+
+    console.log(filterQuery.text)
+
     const companiesRes = await db.query(
-      `SELECT handle,
-                name,
-                description,
-                num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
-          FROM companies
-            WHERE $1 
-          ORDER BY name`,
-      [filter] // FIXME: why doesn't this work?
+      filterQuery.text,
+      filterQuery.values
     )
 
     return companiesRes.rows;

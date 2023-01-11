@@ -91,8 +91,18 @@ describe("findAll", function () {
 
 describe("filterAll", function () {
   test("works: all filters applied w/ results", async function () {
-    const query = `name LIKE '%C%' AND num_employees >= 1 
-      AND num_employees <= 2`
+    const query = {
+      text: `SELECT handle,
+                    name,
+                    description,
+                    num_employees AS "numEmployees",
+                    logo_url AS "logoUrl"
+              FROM companies
+                WHERE LOWER(name) LIKE $1 AND num_employees >= $2 AND num_employees <= $3
+              ORDER BY name`,
+      values: ["%c%", "1", "2"]
+    }
+
     const companies = await Company.filterAll(query);
 
     expect(companies).toEqual([
@@ -114,7 +124,17 @@ describe("filterAll", function () {
   });
   
   test("works: one filter applied w/ result", async function () {
-    const query = `name LIKE '%2%'`
+    const query = {
+      text: `SELECT handle,
+                    name,
+                    description,
+                    num_employees AS "numEmployees",
+                    logo_url AS "logoUrl"
+              FROM companies
+                WHERE LOWER( name ) LIKE $1
+              ORDER BY name`,
+      values: ["%2%"]
+    }
     const companies = await Company.filterAll(query);
 
     expect(companies).toEqual([
@@ -129,7 +149,17 @@ describe("filterAll", function () {
   });
 
   test("works: one filter applied w/o results", async function () {
-    const query = `num_employees >= 100`
+    const query = {
+      text: `SELECT handle,
+                    name,
+                    description,
+                    num_employees AS "numEmployees",
+                    logo_url AS "logoUrl"
+              FROM companies
+                WHERE num_employees >= $1
+              ORDER BY name`,
+      values: ["100"]
+    }
     const companies = await Company.filterAll(query);
 
     expect(companies).toEqual([]);

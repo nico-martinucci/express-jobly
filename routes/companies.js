@@ -79,8 +79,8 @@ router.get("/", async function (req, res, next) {
   if (Object.keys(req.query).length === 0) {
     companies = await Company.findAll();
   } else {
-    const filter = sqlForCompanySearchFilter(req.query);
-    companies = await Company.filterAll(filter);
+    const query = sqlForCompanySearchFilter(req.query);
+    companies = await Company.filterAll(query);
   }
   
   return res.json({ companies });
