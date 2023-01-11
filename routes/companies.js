@@ -55,7 +55,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
   // FIXME: in schema, find a way to cast min/max to integer (currently not checking)
-  
+  // cast min/max values (if they exist) to integers
   const validator = jsonschema.validate(
     req.query,
     companySearch,

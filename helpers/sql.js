@@ -1,5 +1,6 @@
 const { BadRequestError } = require("../expressError");
 
+// FIXME: add an example
 /**
  * sqlForPartialUpdate: generates SQL statement snippets for comma-delineated
  * lists of column names and new values, for direct addition to an SQL update
@@ -21,6 +22,8 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
+
+// FIXME: update this docstring
 /**
  * sqlForCompanySearchFilter: generates a string of filter criteria for searching
  * for companies; builds a string that can be inserted immediately after "WHERE"
@@ -44,6 +47,7 @@ function sqlForCompanySearchFilter({nameLike, minEmployees, maxEmployees}) {
 
   let placeholderCount = 1;
 
+  // TODO: use "ILIKE" to save some characters --> name ILIKE $1
   if (nameLike) {
     filterElems.push(`LOWER( name ) LIKE $${placeholderCount}`);
     query.values.push(`%${nameLike.toLowerCase()}%`);

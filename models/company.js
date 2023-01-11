@@ -65,9 +65,10 @@ class Company {
            ORDER BY name`);
     return companiesRes.rows;
   }
-
+  
+  // FIXME: add a dosctring
   static async filterAll(filterQuery) {
-
+    // TODO: call sqlForCompanySearchFilter here instead
     console.log(filterQuery.text)
 
     const companiesRes = await db.query(

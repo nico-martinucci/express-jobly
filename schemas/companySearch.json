@@ -7,10 +7,12 @@
         "type": "string"
       },
       "minEmployees": {
-
+        "type": "integer",
+        "minimum": 0
       },  
-    "maxEmployees": {
-
+      "maxEmployees": {
+        "type": "integer",
+        "minimum": 0
       }
     },
     "additionalProperties": false,
