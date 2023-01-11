@@ -263,6 +263,23 @@ describe("GET /companies", function () {
       ]
     });
   });
+
+  test("bad query string payload", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ 
+        foo: "bar",
+      });
+    
+    expect(resp.body).toEqual({
+      "error": {
+        "message": [
+          "instance is not allowed to have the additional property \"foo\""
+        ],
+        "status": 400
+      }
+    })
+  })
 });
 
 /************************************** GET /companies/:handle */

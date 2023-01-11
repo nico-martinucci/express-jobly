@@ -54,7 +54,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  // FIXME: in schema, find a way to cast to integer (currently not checking)
+  // FIXME: in schema, find a way to cast min/max to integer (currently not checking)
   
   const validator = jsonschema.validate(
     req.query,

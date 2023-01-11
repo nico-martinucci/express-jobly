@@ -1,6 +1,5 @@
 "use strict";
 
-// FIXME: need to adjust the DB_URI test to reflect new DB_URI set-up
 describe("config can come from env", function () {
   test("works", function() {
     process.env.SECRET_KEY = "abc";
@@ -11,7 +10,7 @@ describe("config can come from env", function () {
     const config = require("./config");
     expect(config.SECRET_KEY).toEqual("abc");
     expect(config.PORT).toEqual(5000);
-    expect(config.getDatabaseUri()).toEqual("other");
+    expect(config.getDatabaseUri()).toEqual("postgresql://nicom:nicom@localhost/jobly");
     expect(config.BCRYPT_WORK_FACTOR).toEqual(12);
 
     delete process.env.SECRET_KEY;
@@ -19,10 +18,10 @@ describe("config can come from env", function () {
     delete process.env.BCRYPT_WORK_FACTOR;
     delete process.env.DATABASE_URL;
 
-    expect(config.getDatabaseUri()).toEqual("jobly");
+    expect(config.getDatabaseUri()).toEqual("postgresql://nicom:nicom@localhost/jobly");
     process.env.NODE_ENV = "test";
 
-    expect(config.getDatabaseUri()).toEqual("jobly_test");
+    expect(config.getDatabaseUri()).toEqual("postgresql://nicom:nicom@localhost/jobly_test");
   });
 })
 
