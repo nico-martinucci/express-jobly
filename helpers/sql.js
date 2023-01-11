@@ -21,4 +21,36 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-module.exports = { sqlForPartialUpdate };
+/**
+ * sqlForCompanySearchFilter: generates a string of filter criteria for searching
+ * for companies; builds a string that can be inserted immediately after "WHERE"
+ * 
+ * e.g. INPUT:
+*         const filters = {
+            nameLike: "test",
+            minEmployees: "1",
+            maxEmployees: "10"
+          }
+        
+        OUTPUT:
+          "name LIKE '%test%' AND num_employees >= 1 AND num_employees <= 10"
+ */
+function sqlForCompanySearchFilter({nameLike, minEmployees, maxEmployees}) {
+  let filterElems = [];
+
+  if (nameLike) {
+    filterElems.push(`LOWER( name ) LIKE '%${nameLike.toLowerCase()}%'`);
+  }
+  if (minEmployees) filterElems.push(`num_employees >= ${minEmployees}`);
+  if (maxEmployees) filterElems.push(`num_employees <= ${maxEmployees}`);
+
+  console.log(filterElems.join(" AND "))
+
+  return filterElems.join(" AND ");
+}
+
+
+module.exports = { 
+  sqlForPartialUpdate,
+  sqlForCompanySearchFilter
+};

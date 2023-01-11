@@ -87,6 +87,55 @@ describe("findAll", function () {
   });
 });
 
+/************************************** filterAll */
+
+describe("filterAll", function () {
+  test("works: all filters applied w/ results", async function () {
+    const query = `name LIKE '%C%' AND num_employees >= 1 
+      AND num_employees <= 2`
+    const companies = await Company.filterAll(query);
+
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      }
+    ]);
+  });
+  
+  test("works: one filter applied w/ result", async function () {
+    const query = `name LIKE '%2%'`
+    const companies = await Company.filterAll(query);
+
+    expect(companies).toEqual([
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      }
+    ]);
+  });
+
+  test("works: one filter applied w/o results", async function () {
+    const query = `num_employees >= 100`
+    const companies = await Company.filterAll(query);
+
+    expect(companies).toEqual([]);
+  });
+})
+
 /************************************** get */
 
 describe("get", function () {

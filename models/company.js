@@ -66,6 +66,22 @@ class Company {
     return companiesRes.rows;
   }
 
+  static async filterAll(filter) {
+    const companiesRes = await db.query(
+      `SELECT handle,
+                name,
+                description,
+                num_employees AS "numEmployees",
+                logo_url AS "logoUrl"
+          FROM companies
+            WHERE $1 
+          ORDER BY name`,
+      [filter] // FIXME: why doesn't this work?
+    )
+
+    return companiesRes.rows;
+  }
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }

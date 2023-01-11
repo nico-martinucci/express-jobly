@@ -122,7 +122,7 @@ describe("GET /companies", function () {
   });
 
   // NEW TESTS vvv
-  
+
   test(
     "filters with optional 'nameLike' filtering criteria, case insensitive", 
     async function () {
@@ -191,6 +191,8 @@ describe("GET /companies", function () {
     expect(resp.body).toEqual({ "companies": [] });
   });
 
+  // TODO: test error if MIN is negative
+
   test("returns companies with MAX number employees", async function() {
     const resp = await request(app)
       .get("/companies")
@@ -223,6 +225,8 @@ describe("GET /companies", function () {
 
     expect(resp.body).toEqual({ "companies": [] });
   });
+
+  // TODO: test error if MAX is negative
 
   test("returns error if MIN greater than MAX", async function() {
     const resp = await request(app)

@@ -1,5 +1,6 @@
 "use strict";
 
+// FIXME: need to adjust the DB_URI test to reflect new DB_URI set-up
 describe("config can come from env", function () {
   test("works", function() {
     process.env.SECRET_KEY = "abc";
