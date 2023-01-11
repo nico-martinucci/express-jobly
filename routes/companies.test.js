@@ -92,6 +92,20 @@ describe("GET /companies", function () {
               numEmployees: 3,
               logoUrl: "http://c3.img",
             },
+            {
+              handle: "test1",
+              name: "TEST ONE",
+              numEmployees: 4,
+              description: "Desc4",
+              logoUrl: "http://c4.img",
+            },
+            {
+              handle: "test2",
+              name: "test two",
+              numEmployees: 5,
+              description: "Desc5",
+              logoUrl: "http://c5.img",
+            }
           ],
     });
   });
@@ -105,6 +119,145 @@ describe("GET /companies", function () {
         .get("/companies")
         .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(500);
+  });
+
+  // NEW TESTS vvv
+  
+  test(
+    "filters with optional 'nameLike' filtering criteria, case insensitive", 
+    async function () {
+      const resp = await request(app)
+        .get("/companies")
+        .query({ nameLike: "test" });
+
+      expect(resp.body).toEqual({
+        "companies": [
+          {
+            "handle": "test1",
+            "name": "TEST ONE",
+            "description": "Desc4",
+            "numEmployees": 4,
+            "logoUrl": "http://c4.img"
+          },
+          {
+            "handle": "test2",
+            "name": "test two",
+            "description": "Desc5",
+            "numEmployees": 5,
+            "logoUrl": "http://c5.img"
+          }
+        ]
+      });
+  });
+
+  test("returns no companies with bad filtering criteria", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ nameLike: "foobar" });
+
+    expect(resp.body).toEqual({ "companies": [] });
+  });
+
+  test("returns companies with MIN number employees", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ minEmployees: 4 });
+
+    expect(resp.body).toEqual({
+      "companies": [
+        {
+          "handle": "test1",
+          "name": "TEST ONE",
+          "description": "Desc4",
+          "numEmployees": 4,
+          "logoUrl": "http://c4.img"
+        },
+        {
+          "handle": "test2",
+          "name": "test two",
+          "description": "Desc5",
+          "numEmployees": 5,
+          "logoUrl": "http://c5.img"
+        }
+      ]
+    });
+  });
+
+  test("returns no companies if MIN employees too high", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ minEmployees: 10 });
+
+    expect(resp.body).toEqual({ "companies": [] });
+  });
+
+  test("returns companies with MAX number employees", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ maxEmployees: 2 });
+
+    expect(resp.body).toEqual({
+      "companies": [
+        {
+          "handle": "c1",
+          "name": "C1",
+          "description": "Desc1",
+          "numEmployees": 1,
+          "logoUrl": "http://c1.img",
+        },
+        {
+          "handle": "c2",
+          "name": "C2",
+          "description": "Desc2",
+          "numEmployees": 2,
+          "logoUrl": "http://c2.img",
+        }
+      ]
+    });
+  });
+
+  test("returns no companies if MAX employees too low", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ maxEmployees: 0 });
+
+    expect(resp.body).toEqual({ "companies": [] });
+  });
+
+  test("returns error if MIN greater than MAX", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ maxEmployees: 0, minEmployees: 5 });
+
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.body).toEqual({ 
+      "error": {
+        "message": "minEmployees must be less than maxEmployees.",
+        "status": 400
+      } 
+    });
+  });
+
+  test("multi-criteria filtering", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ 
+        nameLike: "test",
+        minEmployees: 2,
+        maxEmployees: 4
+      });
+
+    expect(resp.body).toEqual({
+      "companies": [
+        {
+          "handle": "test1",
+          "name": "TEST ONE",
+          "description": "Desc4",
+          "numEmployees": 4,
+          "logoUrl": "http://c4.img"
+        }
+      ]
+    });
   });
 });
 
