@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate, sqlForCompanySearchFilter } = require("../helpers/sql");
+const { sqlForPartialUpdate, sqlForJobSearchFilter } = require("../helpers/sql");
 
 /** Related function for jobs. */
 
@@ -43,10 +43,7 @@ class Job {
      * returns [{ id, title, salary, equity, companyHandle}, ...]
      */
     static async findAll(queryData={}) {
-
-        // FIXME: update to function call when helper is written
-        const query = { text: "", values: [] } 
-        
+        const query = sqlForJobSearchFilter(queryData); 
         const queryText = `
             SELECT id,
                    title,

@@ -110,7 +110,7 @@ describe("findAll", function () {
             }
         ]);
     });
-    /*TODO: uncomment these once filters are set up
+
     test("works: all filters applied w/ results", async function () {
         const queryData = {
             title: "2",
@@ -165,7 +165,6 @@ describe("findAll", function () {
 
         expect(jobs).toEqual([]);
     });
-    */
 });
 
 /************************************** get */

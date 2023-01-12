@@ -132,7 +132,7 @@ describe("GET /jobs", function () {
             .set("authorization", `Bearer ${u1Token}`);
         expect(resp.statusCode).toEqual(500);
     });
-    /* TODO: uncomment these once filters are set up
+
     test(
         "filters with optional 'title' filtering criteria, case insensitive",
         async function () {
@@ -328,7 +328,6 @@ describe("GET /jobs", function () {
             }
         });
     });
-    */
 });
 
 /************************************** GET /jobs/:id */

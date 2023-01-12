@@ -1,7 +1,10 @@
 "use strict";
 
-const request = require("supertest");
-const { sqlForPartialUpdate, sqlForCompanySearchFilter } = require("./sql")
+const { 
+    sqlForPartialUpdate, 
+    sqlForCompanySearchFilter, 
+    sqlForJobSearchFilter 
+} = require("./sql")
 
 describe("test sqlForPartialUpdate helper function", function () {
     test("works for valid inputs", function () {
@@ -37,9 +40,35 @@ describe("test sqlForCompanySearchFilter helper function", function () {
         })
     })
     
-    test("full query for no options passed", function () {
+    test("empty text/values for no options passed", function () {
         const options = {}
         const query = sqlForCompanySearchFilter(options)
+
+        expect(query).toEqual({
+            text: "",
+            values: []
+        })
+    })
+})
+
+describe("test sqlForJobSearchFilter helper function", function () {
+    test("full query for all options passed", function () {
+        const options = {
+            title: "test",
+            minSalary: 1000,
+            hasEquity: true
+        }
+        const query = sqlForJobSearchFilter(options);
+
+        expect(query).toEqual({
+            text: "WHERE title ILIKE $1 AND salary >= $2 AND equity > $3",
+            values: ["%test%", 1000, 0]
+        })
+    })
+
+    test("empty text/values for no options passed", function () {
+        const options = {}
+        const query = sqlForJobSearchFilter(options)
 
         expect(query).toEqual({
             text: "",
