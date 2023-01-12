@@ -60,7 +60,7 @@ router.post(
  *
  * Authorization required: none
  */
-route.get(
+router.get(
     "/",
     async function (req, res, next) {
         const jobs = await Job.findAll();
@@ -73,7 +73,7 @@ route.get(
  *
  * Authorization required: none
  */
-route.get(
+router.get(
     "/:id",
     async function (req, res, next) {
         const job = await Job.get(req.params.id);
@@ -125,9 +125,9 @@ router.delete(
     async function (req, res, next) {
         await Job.remove(req.params.id);
 
-        return res.json({ deleted: req.params.id })
+        return res.json({ deleted: parseInt(req.params.id) })
     }
 )
 
 
-module.exports = jobs;
+module.exports = router;

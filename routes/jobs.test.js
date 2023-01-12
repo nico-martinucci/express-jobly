@@ -42,7 +42,10 @@ describe("POST /jobs", function () {
             .set("authorization", `Bearer ${adminToken}`);
         expect(resp.statusCode).toEqual(201);
         expect(resp.body).toEqual({
-            job: newJob,
+            job: {
+                id: expect.any(Number),
+                ...newJob
+            }
         });
     });
 
@@ -458,7 +461,7 @@ describe("DELETE /jobs/:id", function () {
 
     test("not found for no such company", async function () {
         const resp = await request(app)
-            .delete(`/jobs/nope`)
+            .delete(`/jobs/-1`)
             .set("authorization", `Bearer ${adminToken}`);
 
         expect(resp.statusCode).toEqual(404);
