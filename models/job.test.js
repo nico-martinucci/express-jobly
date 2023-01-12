@@ -9,13 +9,18 @@ const {
     commonAfterEach,
     commonAfterAll,
   } = require("./_testCommon");
-  
-const results = await db.query(
-    `SELECT id
-        FROM jobs
-        WHERE title = 'testJob1'`
-);
-const jobOneId = results.rows[0].id;
+
+let jobOneId;
+
+async function getJobOneId() {
+    const results = await db.query(
+        `SELECT id
+            FROM jobs
+            WHERE title = 'testJob1'`
+    );
+
+    jobOneId = results.rows[0].id;
+}
   
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -33,9 +38,12 @@ describe("create", function () {
     };
     
     test("works", async function () {
-        const job = Job.create(newJob);
+        const job = await Job.create(newJob);
 
-        expect(job).toEqual(newJob);
+        expect(job).toEqual({
+            id: expect.any(Number),
+            ...newJob
+        });
 
         const result = await db.query(
             `SELECT id, title, salary, equity, company_handle
@@ -47,22 +55,40 @@ describe("create", function () {
             {
                 id: expect.any(Number),
                 title: "testJob3",
-                salary: "10",
-                equity: "0.1",
+                salary: 10,
+                equity: 0.1,
                 company_handle: "c1"
             }
         ]);
     });
 
-    test("bad request with dupe", async function () {
+    test("error if required value omited", async function () {
+        const invalidJob = {
+            title: null,
+            salary: 10,
+            equity: 0.1,
+            companyHandle: null
+        };
+
         try {
-            await Job.create(newJob);
-            await Job.create(newJob);
-            throw new Error ("fail test, you shouldn't get here")
-        } catch (err) {
+            await Job.create(invalidJob);
+            throw new Error("fail test, you shouldn't get here");
+        } catch(err) {
             expect(err instanceof BadRequestError).toBeTruthy();
         }
-    })
+    });
+
+    // TODO: confirm, this test not needed since there CAN be duplicate jobs.
+
+    // test("bad request with dupe", async function () {
+    //     try {
+    //         await Job.create(newJob);
+    //         await Job.create(newJob);
+    //         throw new Error ("fail test, you shouldn't get here")
+    //     } catch (err) {
+    //         expect(err instanceof BadRequestError).toBeTruthy();
+    //     }
+    // })
 })
 
 /************************************** findAll */
@@ -156,7 +182,7 @@ describe("findAll", function () {
 
 describe("get", function () {
     test("works for valid ID", async function () {
-        const job = Job.get(jobOneId);
+        const job = await Job.get(jobOneId);
 
         expect(job).toEqual({
             id: jobOneId,
