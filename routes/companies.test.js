@@ -375,15 +375,15 @@ describe("PATCH /companies/:handle", function () {
     });
   });
 
-  // test("unauth for regular user", async function () {
-  //   const resp = await request(app)
-  //       .patch(`/companies/c1`)
-  //       .send({
-  //         name: "C1-new",
-  //       })
-  //       .set("authorization", `Bearer ${u2Token}`);
-  //   expect(resp.statusCode).toEqual(401);
-  // });
+  test("unauth for regular user", async function () {
+    const resp = await request(app)
+        .patch(`/companies/c1`)
+        .send({
+          name: "C1-new",
+        })
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
   test("unauth for anon", async function () {
     const resp = await request(app)
@@ -435,12 +435,12 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.body).toEqual({ deleted: "c1" });
   });
 
-  // test("unauth for regular user", async function () {
-  //   const resp = await request(app)
-  //       .delete(`/companies/c1`)
-  //       .set("authorization", `Bearer ${u2Token}`);
-  //   expect(resp.statusCode).toEqual(401);
-  // });
+  test("unauth for regular user", async function () {
+    const resp = await request(app)
+        .delete(`/companies/c1`)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
   test("unauth for anon", async function () {
     const resp = await request(app)

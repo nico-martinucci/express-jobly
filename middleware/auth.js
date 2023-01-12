@@ -51,9 +51,24 @@ function ensureIsAdmin(req, res, next) {
   return next();
 }
 
+/**
+ * ensureIsAdminOrCurrentUser: checks if the currently logged in user is an 
+ * admin, OR matches the user being accessed.
+ */
+
+function ensureIsAdminOrCurrentUser(req, res, next) {
+  const isMatchingUser = req.params.username === res.locals.user.username;
+  if (!res.locals.user.isAdmin && !isMatchingUser) {
+    throw new UnauthorizedError("must be admin or current user.")
+  }
+
+  return next();
+}
+
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureIsAdmin
+  ensureIsAdmin,
+  ensureIsAdminOrCurrentUser
 };

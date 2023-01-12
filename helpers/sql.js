@@ -34,7 +34,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
     values: Object.values(dataToUpdate),
   };
 }
-// TODO: adjust doc string after change below
+
 /**
  * sqlForCompanySearchFilter: generates a query object with .text and .values
  * properties. .text includes an SQL query with injected filters for each of 
@@ -50,14 +50,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
  * 
  *      OUTPUT --> 
  * {
- *    text: `SELECT handle, 
- *                  name, 
- *                  description, 
- *                  num_employees AS "numEmployees", 
- *                  logo_url AS "logoUrl" 
- *              FROM companies 
- *                WHERE name = $1 AND minEmployees = $2 AND maxEmployees = $3 
- *                  ORDER BY name`,
+ *    text: `WHERE name = $1 AND minEmployees = $2 AND maxEmployees = $3`,
  *    values: ["%test%", 1, 10]
  * }
  * 

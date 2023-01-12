@@ -66,14 +66,11 @@ router.post(
  */
 
 router.get("/", async function (req, res, next) {
-  // TODO: set req.query to a new variable, THEN you can edit it (no ones knows why...)
-  
-  const request = {};
+  const request = req.query;
 
-  for (let key in req.query) {
-    request[key] = req.query[key];
-    if (key === "minEmployees" || key === "maxEmployees") {
-      request[key] = parseInt(request[key]); // TODO: parseInt is too blunt; use Number class, or "+"
+  for (let data of ["minEmployees", "maxEmployees"]) {
+    if (request[data] || request[data] === 0) {
+      request[data] = Number(request[data]);
     }
   }
   
@@ -121,30 +118,42 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: login
  */
 
-router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
-  const validator = jsonschema.validate(
-    req.body,
-    companyUpdateSchema,
-    {required:true}
-  );
-  if (!validator.valid) {
-    const errs = validator.errors.map(e => e.stack);
-    throw new BadRequestError(errs);
-  }
+router.patch(
+  "/:handle",
+  authenticateJWT, 
+  ensureLoggedIn, 
+  ensureIsAdmin, 
+  async function (req, res, next) {
+    const validator = jsonschema.validate(
+      req.body,
+      companyUpdateSchema,
+      {required:true}
+    );
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
 
-  const company = await Company.update(req.params.handle, req.body);
-  return res.json({ company });
-});
+    const company = await Company.update(req.params.handle, req.body);
+    return res.json({ company });
+  }
+);
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
  * Authorization: login
  */
 
-router.delete("/:handle", ensureLoggedIn, async function (req, res, next) {
-  await Company.remove(req.params.handle);
-  return res.json({ deleted: req.params.handle });
-});
+router.delete(
+  "/:handle", 
+  authenticateJWT, 
+  ensureLoggedIn, 
+  ensureIsAdmin, 
+  async function (req, res, next) {
+    await Company.remove(req.params.handle);
+    return res.json({ deleted: req.params.handle });
+  }
+);
 
 
 module.exports = router;
