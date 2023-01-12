@@ -66,19 +66,16 @@ router.post(
  */
 
 router.get("/", async function (req, res, next) {
+  // TODO: set req.query to a new variable, THEN you can edit it (no ones knows why...)
+  
   const request = {};
 
   for (let key in req.query) {
     request[key] = req.query[key];
     if (key === "minEmployees" || key === "maxEmployees") {
-      request[key] = parseInt(request[key]);
-      console.log(key, request[key]);
+      request[key] = parseInt(request[key]); // TODO: parseInt is too blunt; use Number class, or "+"
     }
   }
-  
-  // if (request.minEmployees || request.minEmployees === 0) {
-  //   request.minEmployees = parseInt(request.minEmployees);
-  // }
   
   const validator = jsonschema.validate(
     request,

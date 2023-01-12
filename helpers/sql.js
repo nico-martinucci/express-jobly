@@ -34,7 +34,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
     values: Object.values(dataToUpdate),
   };
 }
-
+// TODO: adjust doc string after change below
 /**
  * sqlForCompanySearchFilter: generates a query object with .text and .values
  * properties. .text includes an SQL query with injected filters for each of 
@@ -86,20 +86,10 @@ function sqlForCompanySearchFilter({nameLike, minEmployees, maxEmployees}) {
     placeholderCount++;
   }
 
-  const filter = filterElems.length 
+  query.text = filterElems.length 
     ? "WHERE " + filterElems.join(" AND ")
     : "";
-  query.text = `SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies ${filter} ORDER BY name`
-  // query.text = `
-  //   SELECT handle,
-  //          name,
-  //          description,
-  //          num_employees AS "numEmployees",
-  //          logo_url AS "logoUrl"
-  //   FROM companies
-  //     WHERE ${filter} 
-  //   ORDER BY name
-  // `
+
   return query;
 }
 

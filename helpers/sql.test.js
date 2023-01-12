@@ -32,20 +32,17 @@ describe("test sqlForCompanySearchFilter helper function", function () {
         const query = sqlForCompanySearchFilter(options)
 
         expect(query).toEqual({
-            text: `SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies WHERE name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3 ORDER BY name`,
+            text: "WHERE name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3",
             values: ["%test%", "1", "10"]
         })
     })
     
-    // FIXME: this test is failing because of how the optional filters are
-    // getting injected into the string - it leaves an extra space if the string
-    // is empty, so the queries aren't EXACTLY correct...
     test("full query for no options passed", function () {
         const options = {}
         const query = sqlForCompanySearchFilter(options)
 
         expect(query).toEqual({
-            text: `SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies ORDER BY name`,
+            text: "",
             values: []
         })
     })

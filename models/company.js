@@ -57,8 +57,16 @@ class Company {
 
   static async findAll(queryData={}) {
     const query = sqlForCompanySearchFilter(queryData);
+    const queryText = `SELECT handle, 
+                              name, 
+                              description, 
+                              num_employees AS "numEmployees", 
+                              logo_url AS "logoUrl" 
+                        FROM companies 
+                          ${query.text} 
+                        ORDER BY name`
     const companiesRes = await db.query(
-      query.text,
+      queryText,
       query.values
     )
 
