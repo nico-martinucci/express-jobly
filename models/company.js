@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate, sqlForCompanySearchFilter } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
@@ -49,31 +49,17 @@ class Company {
     return company;
   }
 
-  /** Find all companies.
+  /** Find all companies, optionally queried by the values provided in queryData
+   * object.
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll() {
+  static async findAll(queryData={}) {
+    const query = sqlForCompanySearchFilter(queryData);
     const companiesRes = await db.query(
-        `SELECT handle,
-                name,
-                description,
-                num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
-           FROM companies
-           ORDER BY name`);
-    return companiesRes.rows;
-  }
-  
-  // FIXME: add a dosctring
-  static async filterAll(filterQuery) {
-    // TODO: call sqlForCompanySearchFilter here instead
-    console.log(filterQuery.text)
-
-    const companiesRes = await db.query(
-      filterQuery.text,
-      filterQuery.values
+      query.text,
+      query.values
     )
 
     return companiesRes.rows;

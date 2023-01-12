@@ -11,6 +11,7 @@ const {
   commonAfterEach,
   commonAfterAll,
   u1Token,
+  u2Token
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -29,7 +30,7 @@ describe("POST /companies", function () {
     numEmployees: 10,
   };
 
-  test("ok for users", async function () {
+  test("ok for admin", async function () {
     const resp = await request(app)
         .post("/companies")
         .send(newCompany)
@@ -38,6 +39,14 @@ describe("POST /companies", function () {
     expect(resp.body).toEqual({
       company: newCompany,
     });
+  });
+
+  test("unautorized for regular user", async function () {
+    const resp = await request(app)
+        .post("/companies")
+        .send(newCompany)
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(401);
   });
 
   test("bad request with missing data", async function () {
@@ -191,7 +200,21 @@ describe("GET /companies", function () {
     expect(resp.body).toEqual({ "companies": [] });
   });
 
-  // TODO: test error if MIN is negative
+  test("throws error is MIN is negative", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ minEmployees: -1 });
+
+    expect(resp.status).toEqual(400)
+    expect(resp.body).toEqual({
+      "error": {
+        "message": [
+          "instance.minEmployees must be greater than or equal to 0"
+        ],
+        "status": 400
+      }
+    });
+  });
 
   test("returns companies with MAX number employees", async function() {
     const resp = await request(app)
@@ -226,7 +249,21 @@ describe("GET /companies", function () {
     expect(resp.body).toEqual({ "companies": [] });
   });
 
-  // TODO: test error if MAX is negative
+  test("throws error if MAX is negative", async function() {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ maxEmployees: -1 });
+
+    expect(resp.status).toEqual(400)
+    expect(resp.body).toEqual({
+      "error": {
+        "message": [
+          "instance.maxEmployees must be greater than or equal to 0"
+        ],
+        "status": 400
+      }
+    });
+  });
 
   test("returns error if MIN greater than MAX", async function() {
     const resp = await request(app)
@@ -320,7 +357,7 @@ describe("GET /companies/:handle", function () {
 /************************************** PATCH /companies/:handle */
 
 describe("PATCH /companies/:handle", function () {
-  test("works for users", async function () {
+  test("works for admin", async function () {
     const resp = await request(app)
         .patch(`/companies/c1`)
         .send({
@@ -337,6 +374,16 @@ describe("PATCH /companies/:handle", function () {
       },
     });
   });
+
+  // test("unauth for regular user", async function () {
+  //   const resp = await request(app)
+  //       .patch(`/companies/c1`)
+  //       .send({
+  //         name: "C1-new",
+  //       })
+  //       .set("authorization", `Bearer ${u2Token}`);
+  //   expect(resp.statusCode).toEqual(401);
+  // });
 
   test("unauth for anon", async function () {
     const resp = await request(app)
@@ -381,12 +428,19 @@ describe("PATCH /companies/:handle", function () {
 /************************************** DELETE /companies/:handle */
 
 describe("DELETE /companies/:handle", function () {
-  test("works for users", async function () {
+  test("works for admin", async function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
         .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({ deleted: "c1" });
   });
+
+  // test("unauth for regular user", async function () {
+  //   const resp = await request(app)
+  //       .delete(`/companies/c1`)
+  //       .set("authorization", `Bearer ${u2Token}`);
+  //   expect(resp.statusCode).toEqual(401);
+  // });
 
   test("unauth for anon", async function () {
     const resp = await request(app)

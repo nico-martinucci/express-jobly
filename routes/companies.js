@@ -6,7 +6,13 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureLoggedIn } = require("../middleware/auth");
+
+const { 
+  authenticateJWT, 
+  ensureLoggedIn, 
+  ensureIsAdmin 
+} = require("../middleware/auth");
+
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
@@ -27,20 +33,26 @@ const router = new express.Router();
  * Authorization required: login
  */
 
-router.post("/", ensureLoggedIn, async function (req, res, next) {
-  const validator = jsonschema.validate(
-    req.body,
-    companyNewSchema,
-    {required: true}
-  );
-  if (!validator.valid) {
-    const errs = validator.errors.map(e => e.stack);
-    throw new BadRequestError(errs);
-  }
+router.post(
+  "/", 
+  authenticateJWT, 
+  ensureLoggedIn, 
+  ensureIsAdmin, 
+  async function (req, res, next) {
+    const validator = jsonschema.validate(
+      req.body,
+      companyNewSchema,
+      {required: true}
+    );
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
 
-  const company = await Company.create(req.body);
-  return res.status(201).json({ company });
-});
+    const company = await Company.create(req.body);
+    return res.status(201).json({ company });
+  }
+);
 
 /** GET /  =>
  *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
@@ -54,10 +66,22 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  // FIXME: in schema, find a way to cast min/max to integer (currently not checking)
-  // cast min/max values (if they exist) to integers
+  const request = {};
+
+  for (let key in req.query) {
+    request[key] = req.query[key];
+    if (key === "minEmployees" || key === "maxEmployees") {
+      request[key] = parseInt(request[key]);
+      console.log(key, request[key]);
+    }
+  }
+  
+  // if (request.minEmployees || request.minEmployees === 0) {
+  //   request.minEmployees = parseInt(request.minEmployees);
+  // }
+  
   const validator = jsonschema.validate(
-    req.query,
+    request,
     companySearch,
     {required: true}
   );
@@ -67,21 +91,11 @@ router.get("/", async function (req, res, next) {
     throw new BadRequestError(errs);
   }
 
-  const { minEmployees, maxEmployees } = req.query;
-
-  if (+minEmployees > +maxEmployees) {
+  if (request.minEmployees > request.maxEmployees) {
     throw new BadRequestError("minEmployees must be less than maxEmployees.");
   }
 
-  let companies;
-
-  // if (!req.query) {
-  if (Object.keys(req.query).length === 0) {
-    companies = await Company.findAll();
-  } else {
-    const query = sqlForCompanySearchFilter(req.query);
-    companies = await Company.filterAll(query);
-  }
+  const companies = await Company.findAll(request);
   
   return res.json({ companies });
 });

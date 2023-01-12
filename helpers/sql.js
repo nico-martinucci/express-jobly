@@ -1,17 +1,30 @@
 const { BadRequestError } = require("../expressError");
 
-// FIXME: add an example
 /**
  * sqlForPartialUpdate: generates SQL statement snippets for comma-delineated
  * lists of column names and new values, for direct addition to an SQL update
  * query.
+ * 
+ * e.g. INPUT --> 
+ * {
+ *    firstName: "Taco", 
+ *    age: 99
+ * },
+ * {
+ *    firstName: "first_name"
+ * }
+ * 
+ *      OUTPUT -->
+ * {
+ *    setCols: '"first_name"=$1, "age"=$2',
+ *    values: ["Taco", 99]
+ * }
  */
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   const keys = Object.keys(dataToUpdate);
   if (keys.length === 0) throw new BadRequestError("No data");
 
-  // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
   const cols = keys.map((colName, idx) =>
       `"${jsToSql[colName] || colName}"=$${idx + 1}`,
   );
@@ -22,21 +35,32 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-
-// FIXME: update this docstring
 /**
- * sqlForCompanySearchFilter: generates a string of filter criteria for searching
- * for companies; builds a string that can be inserted immediately after "WHERE"
+ * sqlForCompanySearchFilter: generates a query object with .text and .values
+ * properties. .text includes an SQL query with injected filters for each of 
+ * the passed criteria (if passed). .values is an array of the filter values to 
+ * inject for each of those placeholders.
  * 
- * e.g. INPUT:
-*         const filters = {
-            nameLike: "test",
-            minEmployees: "1",
-            maxEmployees: "10"
-          }
-        
-        OUTPUT:
-          "name LIKE '%test%' AND num_employees >= 1 AND num_employees <= 10"
+ * e.g. INPUT --> 
+ * {
+ *    nameLike: "test",
+ *    minEmployees: "1",
+ *    maxEmployees: "10"
+ * }
+ * 
+ *      OUTPUT --> 
+ * {
+ *    text: `SELECT handle, 
+ *                  name, 
+ *                  description, 
+ *                  num_employees AS "numEmployees", 
+ *                  logo_url AS "logoUrl" 
+ *              FROM companies 
+ *                WHERE name = $1 AND minEmployees = $2 AND maxEmployees = $3 
+ *                  ORDER BY name`,
+ *    values: ["%test%", 1, 10]
+ * }
+ * 
  */
 function sqlForCompanySearchFilter({nameLike, minEmployees, maxEmployees}) {
   let query = {
@@ -44,28 +68,28 @@ function sqlForCompanySearchFilter({nameLike, minEmployees, maxEmployees}) {
   }
 
   let filterElems = [];
-
   let placeholderCount = 1;
 
-  // TODO: use "ILIKE" to save some characters --> name ILIKE $1
   if (nameLike) {
-    filterElems.push(`LOWER( name ) LIKE $${placeholderCount}`);
+    filterElems.push(`name ILIKE $${placeholderCount}`);
     query.values.push(`%${nameLike.toLowerCase()}%`);
     placeholderCount++;
   }
-  if (minEmployees) {
+  if (minEmployees || minEmployees === 0) {
     filterElems.push(`num_employees >= $${placeholderCount}`);
     query.values.push(minEmployees);
     placeholderCount++;
   }
-  if (maxEmployees) {
+  if (maxEmployees || maxEmployees === 0) {
     filterElems.push(`num_employees <= $${placeholderCount}`);
     query.values.push(maxEmployees);
     placeholderCount++;
   }
 
-  const filter = filterElems.join(" AND ");
-  query.text = `SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies WHERE ${filter} ORDER BY name`
+  const filter = filterElems.length 
+    ? "WHERE " + filterElems.join(" AND ")
+    : "";
+  query.text = `SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl" FROM companies ${filter} ORDER BY name`
   // query.text = `
   //   SELECT handle,
   //          name,

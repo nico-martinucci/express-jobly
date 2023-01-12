@@ -85,25 +85,15 @@ describe("findAll", function () {
       },
     ]);
   });
-});
 
-/************************************** filterAll */
-
-describe("filterAll", function () {
   test("works: all filters applied w/ results", async function () {
-    const query = {
-      text: `SELECT handle,
-                    name,
-                    description,
-                    num_employees AS "numEmployees",
-                    logo_url AS "logoUrl"
-              FROM companies
-                WHERE LOWER(name) LIKE $1 AND num_employees >= $2 AND num_employees <= $3
-              ORDER BY name`,
-      values: ["%c%", "1", "2"]
+    const queryData = {
+      nameLike: "c",
+      minEmployees: 1,
+      maxEmployees: 2
     }
 
-    const companies = await Company.filterAll(query);
+    const companies = await Company.findAll(queryData);
 
     expect(companies).toEqual([
       {
@@ -124,18 +114,10 @@ describe("filterAll", function () {
   });
   
   test("works: one filter applied w/ result", async function () {
-    const query = {
-      text: `SELECT handle,
-                    name,
-                    description,
-                    num_employees AS "numEmployees",
-                    logo_url AS "logoUrl"
-              FROM companies
-                WHERE LOWER( name ) LIKE $1
-              ORDER BY name`,
-      values: ["%2%"]
+    const queryData = {
+      nameLike: "2"
     }
-    const companies = await Company.filterAll(query);
+    const companies = await Company.findAll(queryData);
 
     expect(companies).toEqual([
       {
@@ -149,18 +131,10 @@ describe("filterAll", function () {
   });
 
   test("works: one filter applied w/o results", async function () {
-    const query = {
-      text: `SELECT handle,
-                    name,
-                    description,
-                    num_employees AS "numEmployees",
-                    logo_url AS "logoUrl"
-              FROM companies
-                WHERE num_employees >= $1
-              ORDER BY name`,
-      values: ["100"]
+    const queryData = {
+      minEmployees: 100
     }
-    const companies = await Company.filterAll(query);
+    const companies = await Company.findAll(queryData);
 
     expect(companies).toEqual([]);
   });
