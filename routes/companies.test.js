@@ -345,6 +345,8 @@ describe("GET /companies/:handle", function () {
     });
   });
 
+  // TODO: add back in a test for company w/ no jobs
+
   test("not found for no such company", async function () {
     const resp = await request(app).get(`/companies/nope`);
     expect(resp.statusCode).toEqual(404);

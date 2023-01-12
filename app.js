@@ -24,6 +24,7 @@ app.use(authenticateJWT); // FIXME: can remove from individual routes; ok for mi
 app.use("/auth", authRoutes);
 app.use("/companies", companiesRoutes);
 app.use("/users", usersRoutes);
+app.use("/jobs", jobsRoutes);
 
 
 /** Handle 404 errors -- this matches everything */

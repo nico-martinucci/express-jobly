@@ -436,7 +436,7 @@ describe("DELETE /jobs/:id", function () {
             .delete(`/jobs/${jobOneId}`)
             .set("authorization", `Bearer ${adminToken}`);
 
-        expect(resp.body).toEqual({ deleted: "c1" });
+        expect(resp.body).toEqual({ deleted: jobOneId });
     });
 
     test("unauth for regular user", async function () {
@@ -460,7 +460,7 @@ describe("DELETE /jobs/:id", function () {
         const resp = await request(app)
             .delete(`/jobs/nope`)
             .set("authorization", `Bearer ${adminToken}`);
-            
+
         expect(resp.statusCode).toEqual(404);
     });
 });

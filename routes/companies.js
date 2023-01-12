@@ -30,22 +30,22 @@ const router = new express.Router();
  */
 
 router.post(
-  "/", 
-  ensureIsAdmin, 
-  async function (req, res, next) {
-    const validator = jsonschema.validate(
-      req.body,
-      companyNewSchema,
-      {required: true}
-    );
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
+	"/",
+	ensureIsAdmin,
+	async function (req, res, next) {
+		const validator = jsonschema.validate(
+			req.body,
+			companyNewSchema,
+			{ required: true }
+		);
+		if (!validator.valid) {
+			const errs = validator.errors.map(e => e.stack);
+			throw new BadRequestError(errs);
+		}
 
-    const company = await Company.create(req.body);
-    return res.status(201).json({ company });
-  }
+		const company = await Company.create(req.body);
+		return res.status(201).json({ company });
+	}
 );
 
 /** GET /  =>
@@ -60,45 +60,45 @@ router.post(
  */
 
 router.get("/", async function (req, res, next) {
-  const request = req.query;
+	const request = req.query;
 
-  for (let data of ["minEmployees", "maxEmployees"]) {
-    if (request[data] || request[data] === 0) {
-      request[data] = Number(request[data]);
-    }
-  }
-  
-  const validator = jsonschema.validate(
-    request,
-    companySearch,
-    {required: true}
-  );
+	for (let data of ["minEmployees", "maxEmployees"]) {
+		if (request[data] || request[data] === 0) {
+			request[data] = Number(request[data]);
+		}
+	}
 
-  if (!validator.valid) {
-    const errs = validator.errors.map(e => e.stack);
-    throw new BadRequestError(errs);
-  }
+	const validator = jsonschema.validate(
+		request,
+		companySearch,
+		{ required: true }
+	);
 
-  if (request.minEmployees > request.maxEmployees) {
-    throw new BadRequestError("minEmployees must be less than maxEmployees.");
-  }
+	if (!validator.valid) {
+		const errs = validator.errors.map(e => e.stack);
+		throw new BadRequestError(errs);
+	}
 
-  const companies = await Company.findAll(request);
-  
-  return res.json({ companies });
+	if (request.minEmployees > request.maxEmployees) {
+		throw new BadRequestError("minEmployees must be less than maxEmployees.");
+	}
+
+	const companies = await Company.findAll(request);
+
+	return res.json({ companies });
 });
 
 /** GET /[handle]  =>  { company }
  *
  *  Company is { handle, name, description, numEmployees, logoUrl, jobs }
- *   where jobs is [{ id, title, salary, equity }, ...]
+ *   TODO: where jobs is [{ id, title, salary, equity }, ...]
  *
  * Authorization required: none
  */
-
 router.get("/:handle", async function (req, res, next) {
-  const company = await Company.get(req.params.handle);
-  return res.json({ company });
+	const company = await Company.get(req.params.handle);
+
+	return res.json({ company });
 });
 
 /** PATCH /[handle] { fld1, fld2, ... } => { company }
@@ -113,22 +113,23 @@ router.get("/:handle", async function (req, res, next) {
  */
 
 router.patch(
-  "/:handle",
-  ensureIsAdmin, 
-  async function (req, res, next) {
-    const validator = jsonschema.validate(
-      req.body,
-      companyUpdateSchema,
-      {required:true}
-    );
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
+	"/:handle",
+	ensureIsAdmin,
+	async function (req, res, next) {
+		const validator = jsonschema.validate(
+			req.body,
+			companyUpdateSchema,
+			{ required: true }
+		);
+		if (!validator.valid) {
+			const errs = validator.errors.map(e => e.stack);
+			throw new BadRequestError(errs);
+		}
 
-    const company = await Company.update(req.params.handle, req.body);
-    return res.json({ company });
-  }
+		const company = await Company.update(req.params.handle, req.body);
+		
+		return res.json({ company });
+	}
 );
 
 /** DELETE /[handle]  =>  { deleted: handle }
@@ -137,12 +138,12 @@ router.patch(
  */
 
 router.delete(
-  "/:handle", 
-  ensureIsAdmin, 
-  async function (req, res, next) {
-    await Company.remove(req.params.handle);
-    return res.json({ deleted: req.params.handle });
-  }
+	"/:handle",
+	ensureIsAdmin,
+	async function (req, res, next) {
+		await Company.remove(req.params.handle);
+		return res.json({ deleted: req.params.handle });
+	}
 );
 
 
