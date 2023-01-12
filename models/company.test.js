@@ -91,7 +91,7 @@ describe("findAll", function () {
       nameLike: "c",
       minEmployees: 1,
       maxEmployees: 2
-    }
+    };
 
     const companies = await Company.findAll(queryData);
 
@@ -116,7 +116,7 @@ describe("findAll", function () {
   test("works: one filter applied w/ result", async function () {
     const queryData = {
       nameLike: "2"
-    }
+    };
     const companies = await Company.findAll(queryData);
 
     expect(companies).toEqual([
@@ -133,7 +133,7 @@ describe("findAll", function () {
   test("works: one filter applied w/o results", async function () {
     const queryData = {
       minEmployees: 100
-    }
+    };
     const companies = await Company.findAll(queryData);
 
     expect(companies).toEqual([]);
