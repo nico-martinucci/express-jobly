@@ -7,10 +7,7 @@ const express = require("express");
 
 const { BadRequestError } = require("../expressError");
 
-const { 
-  authenticateJWT, 
-  ensureIsAdmin 
-} = require("../middleware/auth");
+const { ensureIsAdmin } = require("../middleware/auth");
 
 const Company = require("../models/company");
 
@@ -34,7 +31,7 @@ const router = new express.Router();
 
 router.post(
   "/", 
-  authenticateJWT, ensureIsAdmin, 
+  ensureIsAdmin, 
   async function (req, res, next) {
     const validator = jsonschema.validate(
       req.body,
@@ -117,7 +114,6 @@ router.get("/:handle", async function (req, res, next) {
 
 router.patch(
   "/:handle",
-  authenticateJWT, 
   ensureIsAdmin, 
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -142,7 +138,6 @@ router.patch(
 
 router.delete(
   "/:handle", 
-  authenticateJWT, 
   ensureIsAdmin, 
   async function (req, res, next) {
     await Company.remove(req.params.handle);

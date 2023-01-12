@@ -7,7 +7,6 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { 
-  authenticateJWT, 
   ensureIsAdmin,
   ensureIsAdminOrCurrentUser 
 } = require("../middleware/auth");
@@ -35,7 +34,6 @@ const router = express.Router();
 
 router.post(
   "/", 
-  authenticateJWT, 
   ensureIsAdmin,
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -64,7 +62,6 @@ router.post(
 
 router.get(
   "/", 
-  authenticateJWT, 
   ensureIsAdmin,
   async function (req, res, next) {
     const users = await User.findAll();
@@ -82,7 +79,6 @@ router.get(
 
 router.get(
   "/:username", 
-  authenticateJWT,
   ensureIsAdminOrCurrentUser,
   async function (req, res, next) {
     const user = await User.get(req.params.username);
@@ -103,7 +99,6 @@ router.get(
 
 router.patch(
   "/:username", 
-  authenticateJWT,
   ensureIsAdminOrCurrentUser,
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -129,7 +124,6 @@ router.patch(
 
 router.delete(
   "/:username", 
-  authenticateJWT,
   ensureIsAdminOrCurrentUser,
   async function (req, res, next) {
     await User.remove(req.params.username);
