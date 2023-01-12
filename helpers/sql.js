@@ -106,7 +106,7 @@ function sqlForCompanySearchFilter({ nameLike, minEmployees, maxEmployees }) {
  *    values: ["%test%", 1000, 0]
  * }
  */
-function sqlForJobSearchFilter({ title, minSalary, hasEquity }) {
+function sqlForJobSearchFilter({ title, minSalary, hasEquity, company_handle }) {
 	let query = {
 		values: []
 	}
@@ -132,6 +132,11 @@ function sqlForJobSearchFilter({ title, minSalary, hasEquity }) {
 	if (hasEquity === "false") {
 		filterElems.push(`equity = $${placeholderCount}`);
 		query.values.push(0);
+		placeholderCount++;
+	}
+	if (company_handle) {
+		filterElems.push(`company_handle = $${placeholderCount}`);
+		query.values.push(company_handle);
 		placeholderCount++;
 	}
 

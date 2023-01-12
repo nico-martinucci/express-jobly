@@ -1,6 +1,7 @@
 "use strict";
 
 const db = require("../db");
+const Job = require("./job.js");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate, sqlForCompanySearchFilter } = require("../helpers/sql");
 
@@ -95,6 +96,8 @@ class Company {
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+	company.jobs = await Job.findAll({ company_handle: company.handle });
 
     return company;
   }

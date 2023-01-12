@@ -52,7 +52,7 @@ describe("test sqlForCompanySearchFilter helper function", function () {
 })
 
 describe("test sqlForJobSearchFilter helper function", function () {
-    test("full query for all options passed", function () {
+    test("build full query for all options passed", function () {
         const options = {
             title: "test",
             minSalary: 1000,
@@ -66,7 +66,7 @@ describe("test sqlForJobSearchFilter helper function", function () {
         })
     })
     
-    test("query for jobs with no equity if hasEquity is false", function () {
+    test("build query for jobs with no equity if hasEquity is false", function () {
         const options = {
             title: "test",
             minSalary: 1000,
@@ -79,8 +79,20 @@ describe("test sqlForJobSearchFilter helper function", function () {
             values: ["%test%", 1000, 0]
         })
     })
+    
+    test("build query for jobs for specific company", function () {
+        const options = {
+            company_handle: "test"
+        }
+        const query = sqlForJobSearchFilter(options);
 
-    test("empty text/values for no options passed", function () {
+        expect(query).toEqual({
+            text: "WHERE company_handle = $1",
+            values: ["test"]
+        })
+    })
+
+    test("build empty text/values for no options passed", function () {
         const options = {}
         const query = sqlForJobSearchFilter(options)
 
