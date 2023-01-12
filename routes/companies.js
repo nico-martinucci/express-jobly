@@ -9,7 +9,6 @@ const { BadRequestError } = require("../expressError");
 
 const { 
   authenticateJWT, 
-  ensureLoggedIn, 
   ensureIsAdmin 
 } = require("../middleware/auth");
 

@@ -8,7 +8,6 @@ const express = require("express");
 
 const { 
   authenticateJWT, 
-  ensureLoggedIn, 
   ensureIsAdmin,
   ensureIsAdminOrCurrentUser 
 } = require("../middleware/auth");
