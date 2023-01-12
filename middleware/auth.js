@@ -41,8 +41,8 @@ function ensureLoggedIn(req, res, next) {
 // for security, either specifically allow or broadly deny
 
 /**
- * checkIfAdmin: checks if the currently logged in user is an admin; throws
- * UnauthorizedError if not.
+ * checkIfAdmin: checks if there is a currently logged in user, and then checks
+ * if they are an admin; throws UnauthorizedError if not logged in or not admin.
  */
 
 function ensureIsAdmin(req, res, next) {
@@ -56,8 +56,9 @@ function ensureIsAdmin(req, res, next) {
 }
 
 /**
- * ensureIsAdminOrCurrentUser: checks if the currently logged in user is an 
- * admin, OR matches the user being accessed.
+ * ensureIsAdminOrCurrentUser: checks if there is a currently logged in user,
+ * and they are an admin OR if their username matches the user being accessed;
+ * throws an UnauthorizedError if not logged in, not current user, OR not admin.
  */
 
 function ensureIsAdminOrCurrentUser(req, res, next) {
