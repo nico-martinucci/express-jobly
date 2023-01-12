@@ -14,6 +14,9 @@ const {
   u2Token
 } = require("./_testCommon");
 
+const adminToken = u1Token;
+const regUserToken = u2Token;
+
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
@@ -34,18 +37,25 @@ describe("POST /companies", function () {
     const resp = await request(app)
         .post("/companies")
         .send(newCompany)
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       company: newCompany,
     });
   });
 
-  test("unautorized for regular user", async function () {
+  test("unauthorized for regular user", async function () {
     const resp = await request(app)
         .post("/companies")
         .send(newCompany)
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${regUserToken}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+  
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+        .post("/companies")
+        .send(newCompany)
     expect(resp.statusCode).toEqual(401);
   });
 
@@ -56,7 +66,7 @@ describe("POST /companies", function () {
           handle: "new",
           numEmployees: 10,
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -67,7 +77,7 @@ describe("POST /companies", function () {
           ...newCompany,
           logoUrl: "not-a-url",
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 });
@@ -363,7 +373,7 @@ describe("PATCH /companies/:handle", function () {
         .send({
           name: "C1-new",
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       company: {
         handle: "c1",
@@ -381,7 +391,7 @@ describe("PATCH /companies/:handle", function () {
         .send({
           name: "C1-new",
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${regUserToken}`);
     expect(resp.statusCode).toEqual(401);
   });
 
@@ -400,7 +410,7 @@ describe("PATCH /companies/:handle", function () {
         .send({
           name: "new nope",
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 
@@ -410,7 +420,7 @@ describe("PATCH /companies/:handle", function () {
         .send({
           handle: "c1-new",
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -420,7 +430,7 @@ describe("PATCH /companies/:handle", function () {
         .send({
           logoUrl: "not-a-url",
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 });
@@ -431,14 +441,14 @@ describe("DELETE /companies/:handle", function () {
   test("works for admin", async function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({ deleted: "c1" });
   });
 
   test("unauth for regular user", async function () {
     const resp = await request(app)
         .delete(`/companies/c1`)
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${regUserToken}`);
     expect(resp.statusCode).toEqual(401);
   });
 
@@ -451,7 +461,7 @@ describe("DELETE /companies/:handle", function () {
   test("not found for no such company", async function () {
     const resp = await request(app)
         .delete(`/companies/nope`)
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 });
