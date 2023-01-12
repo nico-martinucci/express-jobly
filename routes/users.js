@@ -36,8 +36,7 @@ const router = express.Router();
 
 router.post(
   "/", 
-  authenticateJWT,
-  ensureLoggedIn, 
+  authenticateJWT, 
   ensureIsAdmin,
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -66,8 +65,7 @@ router.post(
 
 router.get(
   "/", 
-  authenticateJWT,
-  ensureLoggedIn, 
+  authenticateJWT, 
   ensureIsAdmin,
   async function (req, res, next) {
     const users = await User.findAll();
@@ -80,13 +78,12 @@ router.get(
  *
  * Returns { username, firstName, lastName, isAdmin }
  *
- * Authorization required: login
+ * Authorization required: admin or current user
  **/
 
 router.get(
   "/:username", 
   authenticateJWT,
-  ensureLoggedIn, 
   ensureIsAdminOrCurrentUser,
   async function (req, res, next) {
     const user = await User.get(req.params.username);
@@ -102,13 +99,12 @@ router.get(
  *
  * Returns { username, firstName, lastName, email, isAdmin }
  *
- * Authorization required: login
+ * Authorization required: admin or current user
  **/
 
 router.patch(
   "/:username", 
   authenticateJWT,
-  ensureLoggedIn, 
   ensureIsAdminOrCurrentUser,
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -129,13 +125,12 @@ router.patch(
 
 /** DELETE /[username]  =>  { deleted: username }
  *
- * Authorization required: login
+ * Authorization required: admin or current user
  **/
 
 router.delete(
   "/:username", 
   authenticateJWT,
-  ensureLoggedIn, 
   ensureIsAdminOrCurrentUser,
   async function (req, res, next) {
     await User.remove(req.params.username);

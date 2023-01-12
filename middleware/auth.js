@@ -38,12 +38,16 @@ function ensureLoggedIn(req, res, next) {
     return next();
 }
 
+// for security, either specifically allow or broadly deny
+
 /**
  * checkIfAdmin: checks if the currently logged in user is an admin; throws
  * UnauthorizedError if not.
  */
 
 function ensureIsAdmin(req, res, next) {
+  if (!res.locals.user) throw new UnauthorizedError();
+  
   if (!res.locals.user.isAdmin) {
     throw new UnauthorizedError("admin access required.")
   }
@@ -57,6 +61,8 @@ function ensureIsAdmin(req, res, next) {
  */
 
 function ensureIsAdminOrCurrentUser(req, res, next) {
+  if (!res.locals.user) throw new UnauthorizedError();
+  
   const isMatchingUser = req.params.username === res.locals.user.username;
   if (!res.locals.user.isAdmin && !isMatchingUser) {
     throw new UnauthorizedError("must be admin or current user.")

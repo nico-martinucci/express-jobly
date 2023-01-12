@@ -30,14 +30,12 @@ const router = new express.Router();
  *
  * Returns { handle, name, description, numEmployees, logoUrl }
  *
- * Authorization required: login
+ * Authorization required: admin
  */
 
 router.post(
   "/", 
-  authenticateJWT, 
-  ensureLoggedIn, 
-  ensureIsAdmin, 
+  authenticateJWT, ensureIsAdmin, 
   async function (req, res, next) {
     const validator = jsonschema.validate(
       req.body,
@@ -115,13 +113,12 @@ router.get("/:handle", async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: login
+ * Authorization required: admin
  */
 
 router.patch(
   "/:handle",
   authenticateJWT, 
-  ensureLoggedIn, 
   ensureIsAdmin, 
   async function (req, res, next) {
     const validator = jsonschema.validate(
@@ -141,13 +138,12 @@ router.patch(
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
- * Authorization: login
+ * Authorization: admin
  */
 
 router.delete(
   "/:handle", 
   authenticateJWT, 
-  ensureLoggedIn, 
   ensureIsAdmin, 
   async function (req, res, next) {
     await Company.remove(req.params.handle);
