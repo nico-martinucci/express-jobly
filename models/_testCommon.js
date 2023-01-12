@@ -52,10 +52,21 @@ async function commonAfterAll() {
   await db.end();
 }
 
+async function getJobOneId() {
+    const results = await db.query(
+        `SELECT id
+            FROM jobs
+            WHERE title = 'testJob1'`
+    );
+
+    return results.rows[0].id;
+}
+
 
 module.exports = {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
+  getJobOneId
 };
