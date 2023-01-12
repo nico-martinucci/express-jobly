@@ -124,8 +124,13 @@ function sqlForJobSearchFilter({ title, minSalary, hasEquity }) {
 		query.values.push(minSalary);
 		placeholderCount++;
 	}
-	if (hasEquity) {
+	if (hasEquity === "true") {
 		filterElems.push(`equity > $${placeholderCount}`);
+		query.values.push(0);
+		placeholderCount++;
+	}
+	if (hasEquity === "false") {
+		filterElems.push(`equity = $${placeholderCount}`);
 		query.values.push(0);
 		placeholderCount++;
 	}

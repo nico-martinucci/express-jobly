@@ -163,7 +163,7 @@ describe("GET /jobs", function () {
     test("returns no jobs with bad filtering criteria", async function () {
         const resp = await request(app)
             .get("/jobs")
-            .query({ nameLike: "foobar" });
+            .query({ title: "foobar" });
 
         expect(resp.body).toEqual({ "jobs": [] });
     });
@@ -196,7 +196,7 @@ describe("GET /jobs", function () {
     test("returns no jobs if minSalary too high", async function () {
         const resp = await request(app)
             .get("/jobs")
-            .query({ minSalary: 100000000000 });
+            .query({ minSalary: 10000000 });
 
         expect(resp.body).toEqual({ "jobs": [] });
     });
@@ -238,7 +238,7 @@ describe("GET /jobs", function () {
     test("returns jobs w/o equity", async function () {
         const resp = await request(app)
             .get("/jobs")
-            .query({ hasEquity: true });
+            .query({ hasEquity: false });
 
         expect(resp.body).toEqual({
             "jobs": [
@@ -282,16 +282,6 @@ describe("GET /jobs", function () {
         });
     });
 
-    test("non-string passed to title", async function () {
-        const resp = await request(app)
-            .get("/jobs")
-            .query({
-                title: 10
-            });
-
-        expect(resp.body.error.staus).toEqual(400);
-    });
-
     test("non-number passed to minSalary", async function () {
         const resp = await request(app)
             .get("/jobs")
@@ -299,17 +289,17 @@ describe("GET /jobs", function () {
                 minSalary: "money please"
             });
 
-        expect(resp.body.error.staus).toEqual(400);
+        expect(resp.body.error.status).toEqual(400);
     });
 
-    test("non-boolean passed to hasEquity", async function () {
+    test("non-boolean-ish passed to hasEquity", async function () {
         const resp = await request(app)
             .get("/jobs")
             .query({
                 hasEquity: "true!!!"
             });
 
-        expect(resp.body.error.staus).toEqual(400);
+        expect(resp.body.error.status).toEqual(400);
     });
 
     test("bad query string payload", async function () {

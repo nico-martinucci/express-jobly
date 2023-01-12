@@ -56,12 +56,26 @@ describe("test sqlForJobSearchFilter helper function", function () {
         const options = {
             title: "test",
             minSalary: 1000,
-            hasEquity: true
+            hasEquity: "true"
         }
         const query = sqlForJobSearchFilter(options);
 
         expect(query).toEqual({
             text: "WHERE title ILIKE $1 AND salary >= $2 AND equity > $3",
+            values: ["%test%", 1000, 0]
+        })
+    })
+    
+    test("query for jobs with no equity if hasEquity is false", function () {
+        const options = {
+            title: "test",
+            minSalary: 1000,
+            hasEquity: "false"
+        }
+        const query = sqlForJobSearchFilter(options);
+
+        expect(query).toEqual({
+            text: "WHERE title ILIKE $1 AND salary >= $2 AND equity = $3",
             values: ["%test%", 1000, 0]
         })
     })

@@ -63,7 +63,24 @@ router.post(
 router.get(
     "/",
     async function (req, res, next) {
-        const jobs = await Job.findAll();
+        const request = req.query;
+
+        if (request.minSalary || request.minSalary === 0) {
+            request.minSalary = Number(request.minSalary);
+        }
+
+        const validator = jsonschema.validate(
+            request,
+            jobSearch,
+            { required: true }
+        );
+
+        if (!validator.valid) {
+            const errs = validator.errors.map(e => e.stack);
+            throw new BadRequestError(errs);
+        }
+
+        const jobs = await Job.findAll(request);
 
         return res.json({ jobs });
     }

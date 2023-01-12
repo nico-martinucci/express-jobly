@@ -11,7 +11,8 @@
         "minimum": 0
       },  
       "hasEquity": {
-        "type": "boolean"
+        "type": "string",
+        "enum": ["true", "false"]
       }
     },
     "additionalProperties": false,
