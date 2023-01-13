@@ -5,21 +5,21 @@
 require("dotenv").config();
 require("colors");
 
-const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
+const SECRET_KEY = process.env.SECRET_KEY;
 
-const PORT = +process.env.PORT || 3001;
+const PORT = +process.env.PORT;
 
 // Use dev database, testing database, or via env var, production database
 function getDatabaseUri() {
   return (process.env.NODE_ENV === "test")
-    ? "postgresql://nicom:nicom@localhost/jobly_test"
-    : "postgresql://nicom:nicom@localhost/jobly";
+    ? process.env.DBI_TEST_URI
+    : process.env.DBI_URI;
 }
 
 // Speed up bcrypt during tests, since the algorithm safety isn't being tested
-//
-// WJB: Evaluate in 2021 if this should be increased to 13 for non-test use
-const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
+const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" 
+  ? 1 
+  : process.env.PROD_BCRYPT_FACTOR;
 
 console.log("Jobly Config:".green);
 console.log("SECRET_KEY:".yellow, SECRET_KEY);
