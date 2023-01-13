@@ -18,7 +18,7 @@ class Job {
      */
     static async create({ title, salary, equity, companyHandle }) {
         if (!title || !companyHandle) {
-            throw new BadRequestError("title and company handle are required."); // TODO: unecessary, this will get caught in schema (but OK to have)
+            throw new BadRequestError("title and company handle are required.");
         } 
         
         const result = await db.query(
@@ -39,19 +39,26 @@ class Job {
 
     /** Find all jobs, optionally queried by the values provided in queryData
      * object.
-     * TODO: include valid query options
+     * 
+     * Valid filter options:
+     * - title (will find case-insensitive, partial matches)
+     * - minSalary
+     * - hasEquity 
+     * - company_handle (local-only option; case-sensitive, exact math search)
+     * 
      * returns [{ id, title, salary, equity, companyHandle}, ...]
      */
     static async findAll(queryData={}) {
         const query = sqlForJobSearchFilter(queryData); // TODO: ask David about clever way to not have two functions for this
         const queryText = `
-            SELECT id,
-                   title,
-                   salary,
-                   equity,
-                   company_handle AS "companyHandle"
-                FROM jobs
-                    ${query.text}
+            SELECT j.id,
+                   j.title,
+                   j.salary,
+                   j.equity,
+                   c.name AS "company"
+                FROM jobs AS j
+                    JOIN companies AS c ON j.company_handle = c.handle
+                ${query.text}
                 ORDER BY id`
         const jobsRes = await db.query(
             queryText,
@@ -64,19 +71,25 @@ class Job {
 
     /** Get one job, based on the provided job id.
      * 
-     * returns { id, title, salary, equity, companyHandle }
+     * returns { id, title, salary, equity, { company } },
+     *      where company = { handle, name, numEmployees, description, logoUrl }
      * 
      * throws a NotFoundError if not found.
      */
     static async get(id) {
         const jobRes = await db.query(
-            `SELECT id,
-                    title,
-                    salary,
-                    equity,
-                    company_handle AS "companyHandle" 
-                FROM jobs
-                    WHERE id = $1`,
+            `SELECT j.id,
+                    j.title,
+                    j.salary,
+                    j.equity,
+                    c.handle,
+                    c.name,
+                    c.num_employees AS "numEmployees",
+                    c.description,
+                    c.logo_url AS "logoUrl"
+                FROM jobs AS j
+                    JOIN companies AS c ON j.company_handle = c.handle
+                WHERE j.id = $1`,
             [id]
         );
 
@@ -84,9 +97,21 @@ class Job {
 
         if (!job) throw new NotFoundError(`No job with id: ${id}`);
         
-        // TODO: include all/most info about the company associated with job
+        const jobData = {
+            id: job.id,
+            title: job.title,
+            salary: job.salary,
+            equity: job.equity,
+            company: {
+                handle: job.handle,
+                name: job.name,
+                numEmployees: job.numEmployees,
+                description: job.description,
+                logoUrl: job.logoUrl
+            }
+        }
 
-        return job;
+        return jobData;
     }
 
     /** Update a job, given its ID and the data to update.
