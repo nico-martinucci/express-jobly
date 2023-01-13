@@ -13,7 +13,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
-const companySearch = require("../schemas/companySearch.json");
+const companySearchSchema = require("../schemas/companySearch.json");
 
 const router = new express.Router();
 
@@ -68,7 +68,7 @@ router.get("/", async function (req, res, next) {
 
 	const validator = jsonschema.validate(
 		request,
-		companySearch,
+		companySearchSchema,
 		{ required: true }
 	);
 

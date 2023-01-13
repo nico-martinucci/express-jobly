@@ -12,7 +12,8 @@ const {
 	commonAfterEach,
 	commonAfterAll,
 	u1Token,
-	u2Token
+	u2Token,
+	testJobIds
 } = require("./_testCommon");
 
 const adminToken = u1Token;
@@ -413,6 +414,44 @@ describe("DELETE /users/:username", function () {
 
 /************************************** POST /users/:username/jobs/:id */
 
-// describe("POST /users/:username/jobs/:id", function () {
-// 	test("works for admin", async function)
-// })
+describe("POST /users/:username/jobs/:id", function () {
+	test("works for admin", async function () {
+		console.log("value of testJobIds at top of 'works for admin' test", testJobIds)
+		const resp = await request(app)
+			.post(`/users/u2/jobs/${testJobIds.testJob1}`)
+			.set("authorization", `Bearer ${adminToken}`);
+		
+		expect(resp.body).toEqual({ applied: testJobIds.testJob1 })
+	});
+	
+	test("works for current user", async function () {
+		const resp = await request(app)
+			.post(`/users/u2/jobs/${testJobIds.testJob1}`)
+			.set("authorization", `Bearer ${regUserToken}`);
+		
+		expect(resp.body).toEqual({ applied: testJobIds.testJob1 })
+	});
+	
+	test("unauth for non-admin", async function () {
+		const resp = await request(app)
+			.post(`/users/u1/jobs/${testJobIds.testJob1}`)
+			.set("authorization", `Bearer ${regUserToken}`);
+		
+		expect(resp.statusCode).toEqual(401);
+	});
+	
+	test("unauth for anon", async function () {
+		const resp = await request(app)
+			.post(`/users/u1/jobs/${testJobIds.testJob1}`);
+		
+			expect(resp.statusCode).toEqual(401);
+	});
+	
+	test("bad request for non-integer id", async function () {
+		const resp = await request(app)
+			.post(`/users/u2/jobs/notANumber`)
+			.set("authorization", `Bearer ${regUserToken}`);
+		
+			expect(resp.statusCode).toEqual(400);
+	});
+})
