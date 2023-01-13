@@ -48,7 +48,7 @@ router.post(
 );
 
 /** GET /  =>
- *   { jobs: [ { id, title, salary, equity, company }, ...] } // TODO: update doc string to reflect company name included
+ *   { jobs: [ { id, title, salary, equity, company }, ...] }
  *
  * Can filter on provided search filters:
  * - title (will find case-insensitive, partial matches)
@@ -140,7 +140,7 @@ router.delete(
     async function (req, res, next) {
         await Job.remove(req.params.id);
 
-        return res.json({ deleted: parseInt(req.params.id) }) // TODO: change to "+"
+        return res.json({ deleted: Number(req.params.id) })
     }
 )
 
