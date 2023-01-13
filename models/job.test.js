@@ -9,16 +9,13 @@ const {
     commonBeforeEach,
     commonAfterEach,
     commonAfterAll,
-    getJobOneId
+    testJobIds
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
-
-const { testData } = require("../config");
-console.log("value of testData.jobIds object: ", testData.jobIds);
 
 /************************************** create */
 
@@ -31,13 +28,15 @@ describe("create", function () {
     };
     
     test("works", async function () {
-        console.log("value of testData.jobIds object at top of first test: ", testData.jobIds);
+        console.log("value of testJobIds at top of 'works' test: ", testJobIds);
         const job = await Job.create(newJob);
 
         expect(job).toEqual({
             id: expect.any(Number),
             ...newJob
         });
+
+        testJobIds.testJob3 = job.id;
 
         const result = await db.query(
             `SELECT id, title, salary, equity, company_handle
@@ -47,7 +46,7 @@ describe("create", function () {
 
         expect(result.rows).toEqual([
             {
-                id: expect.any(Number),
+                id: testJobIds.testJob3,
                 title: "testJob3",
                 salary: 10,
                 equity: 0.1,
@@ -81,21 +80,21 @@ describe("findAll", function () {
 
         expect(jobs).toEqual([
             {
-                id: expect.any(Number), // TODO: change to test exact ID from commonBeforeAll function results
+                id: testJobIds.testJob1,
                 title: "testJob1",
                 salary: 100,
                 equity: 0,
                 company: "C1" 
             },
             {
-                id: expect.any(Number),
+                id: testJobIds.testJob2,
                 title: "testJob2",
                 salary: 1000,
                 equity: 0.1,
                 company: "C2" 
             },
             {
-                id: expect.any(Number),
+                id: testJobIds.another1,
                 title: "another1",
                 salary: 10000,
                 equity: 0,
@@ -115,7 +114,7 @@ describe("findAll", function () {
 
         expect(jobs).toEqual([
             {
-                id: expect.any(Number),
+                id: testJobIds.testJob2,
                 title: "testJob2",
                 salary: 1000,
                 equity: 0.1,
@@ -133,14 +132,14 @@ describe("findAll", function () {
 
         expect(jobs).toEqual([
             {
-                id: expect.any(Number),
+                id: testJobIds.testJob1,
                 title: "testJob1",
                 salary: 100,
                 equity: 0,
                 company: "C1" 
             },
             {
-                id: expect.any(Number),
+                id: testJobIds.testJob2,
                 title: "testJob2",
                 salary: 1000,
                 equity: 0.1,
@@ -164,11 +163,10 @@ describe("findAll", function () {
 
 describe("get", function () {
     test("works for valid ID", async function () {
-        const jobOneId = await getJobOneId();
-        const job = await Job.get(jobOneId);
+        const job = await Job.get(testJobIds.testJob1);
 
         expect(job).toEqual({
-            id: jobOneId,
+            id: testJobIds.testJob1,
             title: "testJob1",
             salary: 100,
             equity: 0,
@@ -203,11 +201,10 @@ describe("update", function () {
     }
     
     test("works", async function () {
-        const jobOneId = await getJobOneId(); // TODO: change to global constant, AFTER test set-up
-        const job = await Job.update(jobOneId, updateData);
+        const job = await Job.update(testJobIds.testJob1, updateData);
 
         expect(job).toEqual({
-            id: jobOneId,
+            id: testJobIds.testJob1,
             ...updateData,
             companyHandle: "c1"
         })
@@ -216,11 +213,11 @@ describe("update", function () {
             `SELECT id, title, salary, equity, company_handle
                 FROM jobs
                 WHERE id = $1`,
-            [jobOneId]
+            [testJobIds.testJob1]
         );
 
         expect(result.rows[0]).toEqual({
-            id: jobOneId,
+            id: testJobIds.testJob1,
             title: "newTestJob1Title",
             salary: 10000000,
             equity: 0.5,
@@ -229,17 +226,16 @@ describe("update", function () {
     });
 
     test("works: null fields", async function () {
-        const jobOneId = await getJobOneId();
         const updateDataSetNulls = {
             title: "newTestJob1Title",
             salary: null,
             equity: null
         };
         
-        const job = await Job.update(jobOneId, updateDataSetNulls);
+        const job = await Job.update(testJobIds.testJob1, updateDataSetNulls);
 
         expect(job).toEqual({
-            id: jobOneId,
+            id: testJobIds.testJob1,
             ...updateDataSetNulls,
             companyHandle: "c1"
         });
@@ -248,11 +244,11 @@ describe("update", function () {
             `SELECT id, title, salary, equity, company_handle
                 FROM jobs
                 WHERE id = $1`,
-            [jobOneId]
+            [testJobIds.testJob1]
         );
 
         expect(result.rows[0]).toEqual({
-            id: jobOneId,
+            id: testJobIds.testJob1,
             title: "newTestJob1Title",
             salary: null,
             equity: null,
@@ -270,9 +266,8 @@ describe("update", function () {
     });
     
     test("bad request with no data", async function () {
-        const jobOneId = await getJobOneId();
         try {
-            await Job.update(jobOneId, {});
+            await Job.update(testJobIds.testJob1, {});
             throw new Error("fail test, you shouldn't get here");
         } catch(err) {
             expect(err instanceof BadRequestError).toBeTruthy();
@@ -283,16 +278,14 @@ describe("update", function () {
 /************************************** remove */
 
 describe("remove", function () {
-    test("works", async function () {
-        const jobOneId = await getJobOneId();
-        
-        await Job.remove(jobOneId);
+    test("works", async function () {  
+        await Job.remove(testJobIds.testJob1);
 
         const result = await db.query(
             `SELECT id
                 FROM jobs
                 WHERE id = $1`,
-            [jobOneId]
+            [testJobIds.testJob1]
         );
 
         expect(result.rows.length).toEqual(0);
