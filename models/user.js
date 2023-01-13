@@ -139,6 +139,15 @@ class User {
 
 		if (!user) throw new NotFoundError(`No user: ${username}`);
 
+		const jobsRes = await db.query(
+			`SELECT job_id AS "jobId"
+				FROM applications
+				WHERE username = $1`,
+			[username]
+		)
+
+		user.jobs = jobsRes.rows.map(j => j.jobId);
+
 		return user;
 	}
 
@@ -212,18 +221,26 @@ class User {
 	 * Throws NotFoundError if either username or jobId is invalid
 	 */
 	static async apply(username, jobId) {
+		console.log("username that might be too long: ", username);
 		let result;
 		try {
 			result = await db.query(
 				`INSERT INTO applications(username, job_id)
-					VALUES ($1, $2)`,
+					VALUES ($1, $2)
+				RETURNING job_id AS "jobId"`,
 				[username, jobId]
 			)
 		} catch(err) {
-			throw new NotFoundError("Invalid username or jobId.")
+			if (err.detail.includes("not present")) {
+				throw new NotFoundError("Invalid username or jobId.")
+			} else if (err.detail.includes("already exists")) {
+				throw new BadRequestError("Job already applied to by this user.")
+			}
+
+			throw new BadRequestError();
 		}
 
-		return { applied: jobId };
+		return { applied: result.rows[0].jobId };
 	}
 }
 

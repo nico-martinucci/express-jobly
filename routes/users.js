@@ -161,6 +161,8 @@ router.post(
 			throw new BadRequestError(errs);
 		}
 
+		console.log("request.username value in post route: ", request.username);
+
 		const application = await User.apply(request.username, request.id);
 
 		return res.json(application);

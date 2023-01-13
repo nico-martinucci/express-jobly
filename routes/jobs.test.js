@@ -10,9 +10,9 @@ const {
     commonBeforeEach,
     commonAfterEach,
     commonAfterAll,
-    getJobOneId,
     u1Token,
-    u2Token
+    u2Token,
+    testJobIds
 } = require("./_testCommon");
 
 const adminToken = u1Token;
@@ -322,8 +322,7 @@ describe("GET /jobs", function () {
 
 describe("GET /jobs/:id", function () {
     test("works for anon", async function () {
-        const jobOneId = await getJobOneId();
-        const resp = await request(app).get(`/jobs/${jobOneId}`);
+        const resp = await request(app).get(`/jobs/${testJobIds.testJob1}`);
         expect(resp.body).toEqual({
             job: {
                 id: expect.any(Number),
@@ -351,9 +350,8 @@ describe("GET /jobs/:id", function () {
 
 describe("PATCH /jobs/:id", function () {
     test("works for admin", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .patch(`/jobs/${jobOneId}`)
+            .patch(`/jobs/${testJobIds.testJob1}`)
             .send({
                 title: "newJobName",
             })
@@ -370,9 +368,8 @@ describe("PATCH /jobs/:id", function () {
     });
 
     test("unauth for regular user", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .patch(`/jobs/${jobOneId}`)
+            .patch(`/jobs/${testJobIds.testJob1}`)
             .send({
                 title: "newJobName",
             })
@@ -381,9 +378,8 @@ describe("PATCH /jobs/:id", function () {
     });
 
     test("unauth for anon", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .patch(`/jobs/${jobOneId}`)
+            .patch(`/jobs/${testJobIds.testJob1}`)
             .send({
                 title: "newJobName",
             });
@@ -401,9 +397,8 @@ describe("PATCH /jobs/:id", function () {
     });
 
     test("bad request on id change attempt", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .patch(`/jobs/${jobOneId}`)
+            .patch(`/jobs/${testJobIds.testJob1}`)
             .send({
                 id: "c1-new",
             })
@@ -412,9 +407,8 @@ describe("PATCH /jobs/:id", function () {
     });
 
     test("bad request on invalid data", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .patch(`/jobs/${jobOneId}`)
+            .patch(`/jobs/${testJobIds.testJob1}`)
             .send({
                 salary: "double",
             })
@@ -427,27 +421,24 @@ describe("PATCH /jobs/:id", function () {
 
 describe("DELETE /jobs/:id", function () {
     test("works for admin", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .delete(`/jobs/${jobOneId}`)
+            .delete(`/jobs/${testJobIds.testJob1}`)
             .set("authorization", `Bearer ${adminToken}`);
 
-        expect(resp.body).toEqual({ deleted: jobOneId });
+        expect(resp.body).toEqual({ deleted: testJobIds.testJob1 });
     });
 
     test("unauth for regular user", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .delete(`/jobs/${jobOneId}`)
+            .delete(`/jobs/${testJobIds.testJob1}`)
             .set("authorization", `Bearer ${regUserToken}`);
 
         expect(resp.statusCode).toEqual(401);
     });
 
     test("unauth for anon", async function () {
-        const jobOneId = await getJobOneId();
         const resp = await request(app)
-            .delete(`/jobs/${jobOneId}`);
+            .delete(`/jobs/${testJobIds.testJob1}`);
 
         expect(resp.statusCode).toEqual(401);
     });

@@ -117,14 +117,14 @@ describe("findAll", function () {
 				firstName: "U1F",
 				lastName: "U1L",
 				email: "u1@email.com",
-				isAdmin: false,
+				isAdmin: false
 			},
 			{
 				username: "u2",
 				firstName: "U2F",
 				lastName: "U2L",
 				email: "u2@email.com",
-				isAdmin: false,
+				isAdmin: false
 			},
 		]);
 	});
@@ -133,7 +133,7 @@ describe("findAll", function () {
 /************************************** get */
 
 describe("get", function () {
-	test("works", async function () {
+	test("works for user w/ jobs applied", async function () {
 		let user = await User.get("u1");
 		expect(user).toEqual({
 			username: "u1",
@@ -141,6 +141,19 @@ describe("get", function () {
 			lastName: "U1L",
 			email: "u1@email.com",
 			isAdmin: false,
+			jobs: [testJobIds.testJob1, testJobIds.testJob2]
+		});
+	});
+	
+	test("works for user w/o jobs applied", async function () {
+		let user = await User.get("u2");
+		expect(user).toEqual({
+			username: "u2",
+			firstName: "U2F",
+			lastName: "U2L",
+			email: "u2@email.com",
+			isAdmin: false,
+			jobs: []
 		});
 	});
 
@@ -234,25 +247,34 @@ describe("remove", function () {
 
 describe("apply", function () {
 	test("works", async function () {
-		const application = await User.apply("u1", testJobIds.testJob1);
-		expect(application).toEqual({ applied: testJobIds.testJob1 });
+		const application = await User.apply("u1", testJobIds.another1);
+		expect(application).toEqual({ applied: testJobIds.another1 });
 	});
 
-	test("error if bad username", async function () {
+	test("not found error if bad username", async function () {
 		try {
-			await User.apply("badUsername", testJobIds.testJob1);
+			await User.apply("badUsername", testJobIds.another1);
 			throw new Error("fail test, you shouldn't get here");
 		} catch(err) {
 			expect(err instanceof NotFoundError).toBeTruthy();
 		}
 	});
 
-	test("error if bad job ID", async function () {
+	test("not found error if bad job ID", async function () {
 		try {
 			await User.apply("u1", -1);
 			throw new Error("fail test, you shouldn't get here");
 		} catch(err) {
 			expect(err instanceof NotFoundError).toBeTruthy();
+		}
+	});
+	
+	test("bad request error if dupe application", async function () {
+		try {
+			await User.apply("u1", testJobIds.testJob1);
+			throw new Error("fail test, you shouldn't get here");
+		} catch(err) {
+			expect(err instanceof BadRequestError).toBeTruthy();
 		}
 	});
 })

@@ -226,6 +226,7 @@ describe("GET /users/:username", function () {
 				lastName: "U2L",
 				email: "user2@user.com",
 				isAdmin: false,
+				jobs: []
 			},
 		});
 	});
@@ -242,6 +243,7 @@ describe("GET /users/:username", function () {
 				lastName: "U2L",
 				email: "user2@user.com",
 				isAdmin: false,
+				jobs: []
 			},
 		});
 	});
@@ -418,23 +420,23 @@ describe("POST /users/:username/jobs/:id", function () {
 	test("works for admin", async function () {
 		console.log("value of testJobIds at top of 'works for admin' test", testJobIds)
 		const resp = await request(app)
-			.post(`/users/u2/jobs/${testJobIds.testJob1}`)
+			.post(`/users/u2/jobs/${testJobIds.another1}`)
 			.set("authorization", `Bearer ${adminToken}`);
 		
-		expect(resp.body).toEqual({ applied: testJobIds.testJob1 })
+		expect(resp.body).toEqual({ applied: testJobIds.another1 })
 	});
 	
 	test("works for current user", async function () {
 		const resp = await request(app)
-			.post(`/users/u2/jobs/${testJobIds.testJob1}`)
+			.post(`/users/u2/jobs/${testJobIds.another1}`)
 			.set("authorization", `Bearer ${regUserToken}`);
 		
-		expect(resp.body).toEqual({ applied: testJobIds.testJob1 })
+		expect(resp.body).toEqual({ applied: testJobIds.another1 })
 	});
 	
 	test("unauth for non-admin", async function () {
 		const resp = await request(app)
-			.post(`/users/u1/jobs/${testJobIds.testJob1}`)
+			.post(`/users/u1/jobs/${testJobIds.another1}`)
 			.set("authorization", `Bearer ${regUserToken}`);
 		
 		expect(resp.statusCode).toEqual(401);
@@ -442,7 +444,7 @@ describe("POST /users/:username/jobs/:id", function () {
 	
 	test("unauth for anon", async function () {
 		const resp = await request(app)
-			.post(`/users/u1/jobs/${testJobIds.testJob1}`);
+			.post(`/users/u1/jobs/${testJobIds.another1}`);
 		
 			expect(resp.statusCode).toEqual(401);
 	});
