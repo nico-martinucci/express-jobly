@@ -100,21 +100,21 @@ describe("GET /jobs", function () {
                         title: "testJob1",
                         salary: 100,
                         equity: 0,
-                        companyHandle: "c1"
+                        company: "C1"
                     },
                     {
                         id: expect.any(Number),
                         title: "testJob2",
                         salary: 1000,
                         equity: 0.1,
-                        companyHandle: "c2"
+                        company: "C2"
                     },
                     {
                         id: expect.any(Number),
                         title: "another1",
                         salary: 10000,
                         equity: 0,
-                        companyHandle: "c3"
+                        company: "C3"
                     }
                 ],
         });
@@ -145,14 +145,14 @@ describe("GET /jobs", function () {
                         title: "testJob1",
                         salary: 100,
                         equity: 0,
-                        companyHandle: "c1"
+                        company: "C1"
                     },
                     {
                         id: expect.any(Number),
                         title: "testJob2",
                         salary: 1000,
                         equity: 0.1,
-                        companyHandle: "c2"
+                        company: "C2"
                     }
                 ]
             });
@@ -178,14 +178,14 @@ describe("GET /jobs", function () {
                     title: "testJob2",
                     salary: 1000,
                     equity: 0.1,
-                    companyHandle: "c2"
+                    company: "C2"
                 },
                 {
                     id: expect.any(Number),
                     title: "another1",
                     salary: 10000,
                     equity: 0,
-                    companyHandle: "c3"
+                    company: "C3"
                 }
             ]
         });
@@ -227,7 +227,7 @@ describe("GET /jobs", function () {
                     title: "testJob2",
                     salary: 1000,
                     equity: 0.1,
-                    companyHandle: "c2"
+                    company: "C2"
                 }
             ]
         });
@@ -245,14 +245,14 @@ describe("GET /jobs", function () {
                     title: "testJob1",
                     salary: 100,
                     equity: 0,
-                    companyHandle: "c1"
+                    company: "C1"
                 },
                 {
                     id: expect.any(Number),
                     title: "another1",
                     salary: 10000,
                     equity: 0,
-                    companyHandle: "c3"
+                    company: "C3"
                 }
             ]
         });
@@ -274,7 +274,7 @@ describe("GET /jobs", function () {
                     title: "testJob1",
                     salary: 100,
                     equity: 0,
-                    companyHandle: "c1"
+                    company: "C1"
                 }
             ]
         });
@@ -330,7 +330,13 @@ describe("GET /jobs/:id", function () {
                 title: "testJob1",
                 salary: 100,
                 equity: 0,
-                companyHandle: "c1"
+                company: {
+                    handle: "c1",
+                    name: "C1",
+                    numEmployees: 1,
+                    description: "Desc1",
+                    logoUrl: "http://c1.img"
+                }
             },
         });
     });

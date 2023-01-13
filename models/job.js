@@ -65,7 +65,6 @@ class Job {
             query.values
         )
 
-        // TODO: grab company NAME (instead of just handle) in what's returned
         return jobsRes.rows;
     }
 

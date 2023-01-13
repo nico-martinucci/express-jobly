@@ -13,7 +13,7 @@ const Job = require("../models/job");
 
 const jobNewSchema = require("../schemas/jobNew.json");
 const jobUpdateSchema = require("../schemas/jobUpdate.json");
-const jobSearch = require("../schemas/jobSearch.json");
+const jobSearchSchema = require("../schemas/jobSearch.json");
 
 const router = new express.Router();
 
@@ -48,7 +48,7 @@ router.post(
 );
 
 /** GET /  =>
- *   { jobs: [ { id, title, salary, equity, companyHandle }, ...] } // TODO: update doc string to reflect company name included
+ *   { jobs: [ { id, title, salary, equity, company }, ...] } // TODO: update doc string to reflect company name included
  *
  * Can filter on provided search filters:
  * - title (will find case-insensitive, partial matches)
@@ -68,7 +68,7 @@ router.get(
 
         const validator = jsonschema.validate(
             request,
-            jobSearch, // TODO: update variable name in require to include "schema"
+            jobSearchSchema,
             { required: true }
         );
 
@@ -83,7 +83,8 @@ router.get(
     }
 );
 
-/** GET /:id => { job: { id, title, salary, equity, companyHandle } } // TODO: incl. add'l company data here too
+/** GET /:id => { job: { id, title, salary, equity, { company } } }
+ *      where company = { handle, name, numEmployees, description, logoUrl }
  *
  * Authorization required: none
  */
