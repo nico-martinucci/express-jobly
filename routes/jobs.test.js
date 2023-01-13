@@ -23,8 +23,6 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
-// FIXME: once these tests are working, try to move jogOneId to a global variable.
-
 /************************************** POST /jobs */
 
 describe("POST /jobs", function () {
