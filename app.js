@@ -20,7 +20,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
-app.use(authenticateJWT); // FIXME: can remove from individual routes; ok for middleware with no errors (for anon user)
+app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
 app.use("/companies", companiesRoutes);

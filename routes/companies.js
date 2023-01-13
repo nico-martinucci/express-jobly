@@ -15,8 +15,6 @@ const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
 const companySearch = require("../schemas/companySearch.json");
 
-const { sqlForCompanySearchFilter } = require("../helpers/sql");
-
 const router = new express.Router();
 
 
@@ -91,7 +89,7 @@ router.get("/", async function (req, res, next) {
 /** GET /[handle]  =>  { company }
  *
  *  Company is { handle, name, description, numEmployees, logoUrl, jobs }
- *   TODO: where jobs is [{ id, title, salary, equity }, ...]
+ *   where jobs is [{ id, title, salary, equity }, ...]
  *
  * Authorization required: none
  */

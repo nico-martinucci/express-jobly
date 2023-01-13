@@ -15,9 +15,6 @@ const jobNewSchema = require("../schemas/jobNew.json");
 const jobUpdateSchema = require("../schemas/jobUpdate.json");
 const jobSearch = require("../schemas/jobSearch.json");
 
-// TODO: bring in the correct search filter function once it's written
-// const { sqlForCompanySearchFilter } = require("../helpers/sql");
-
 const router = new express.Router();
 
 
@@ -53,7 +50,7 @@ router.post(
 /** GET /  =>
  *   { jobs: [ { id, title, salary, equity, companyHandle }, ...] }
  *
- * TODO: Can filter on provided search filters:
+ * Can filter on provided search filters:
  * - title (will find case-insensitive, partial matches)
  * - minSalary
  * - hasEquity

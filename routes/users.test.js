@@ -277,7 +277,7 @@ describe("PATCH /users/:username", () => {
         .send({
           firstName: "New",
         })
-        .set("authorization", `Bearer ${adminToken}`); // TODO: move "u1Token" to "adminToken"
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       user: {
         username: "u2",
