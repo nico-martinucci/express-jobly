@@ -1,5 +1,6 @@
 "use strict";
 
+
 const db = require("../db.js");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const Job = require("./job.js");
@@ -10,11 +11,14 @@ const {
     commonAfterAll,
     getJobOneId
 } = require("./_testCommon");
-  
+
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
+
+const { testData } = require("../config");
+console.log("value of testData.jobIds object: ", testData.jobIds);
 
 /************************************** create */
 
@@ -27,6 +31,7 @@ describe("create", function () {
     };
     
     test("works", async function () {
+        console.log("value of testData.jobIds object at top of first test: ", testData.jobIds);
         const job = await Job.create(newJob);
 
         expect(job).toEqual({
@@ -66,18 +71,6 @@ describe("create", function () {
             expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
-
-    // TODO: confirm, this test not needed since there CAN be duplicate jobs.
-
-    // test("bad request with dupe", async function () {
-    //     try {
-    //         await Job.create(newJob);
-    //         await Job.create(newJob);
-    //         throw new Error ("fail test, you shouldn't get here")
-    //     } catch (err) {
-    //         expect(err instanceof BadRequestError).toBeTruthy();
-    //     }
-    // })
 })
 
 /************************************** findAll */
@@ -88,7 +81,7 @@ describe("findAll", function () {
 
         expect(jobs).toEqual([
             {
-                id: expect.any(Number),
+                id: expect.any(Number), // TODO: change to test exact ID from commonBeforeAll function results
                 title: "testJob1",
                 salary: 100,
                 equity: 0,
@@ -204,7 +197,7 @@ describe("update", function () {
     }
     
     test("works", async function () {
-        const jobOneId = await getJobOneId();
+        const jobOneId = await getJobOneId(); // TODO: change to global constant, AFTER test set-up
         const job = await Job.update(jobOneId, updateData);
 
         expect(job).toEqual({

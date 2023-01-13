@@ -18,7 +18,7 @@ class Job {
      */
     static async create({ title, salary, equity, companyHandle }) {
         if (!title || !companyHandle) {
-            throw new BadRequestError("title and company handle are required.");
+            throw new BadRequestError("title and company handle are required."); // TODO: unecessary, this will get caught in schema (but OK to have)
         } 
         
         const result = await db.query(
@@ -39,11 +39,11 @@ class Job {
 
     /** Find all jobs, optionally queried by the values provided in queryData
      * object.
-     * 
+     * TODO: include valid query options
      * returns [{ id, title, salary, equity, companyHandle}, ...]
      */
     static async findAll(queryData={}) {
-        const query = sqlForJobSearchFilter(queryData); 
+        const query = sqlForJobSearchFilter(queryData); // TODO: ask David about clever way to not have two functions for this
         const queryText = `
             SELECT id,
                    title,
@@ -58,6 +58,7 @@ class Job {
             query.values
         )
 
+        // TODO: grab company NAME (instead of just handle) in what's returned
         return jobsRes.rows;
     }
 
@@ -82,6 +83,8 @@ class Job {
         const job = jobRes.rows[0];
 
         if (!job) throw new NotFoundError(`No job with id: ${id}`);
+        
+        // TODO: include all/most info about the company associated with job
 
         return job;
     }

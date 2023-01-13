@@ -228,3 +228,9 @@ describe("remove", function () {
     }
   });
 });
+
+/************************************** apply */
+
+// describe("apply", function () {
+
+// })

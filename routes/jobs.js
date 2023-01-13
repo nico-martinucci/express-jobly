@@ -48,7 +48,7 @@ router.post(
 );
 
 /** GET /  =>
- *   { jobs: [ { id, title, salary, equity, companyHandle }, ...] }
+ *   { jobs: [ { id, title, salary, equity, companyHandle }, ...] } // TODO: update doc string to reflect company name included
  *
  * Can filter on provided search filters:
  * - title (will find case-insensitive, partial matches)
@@ -68,7 +68,7 @@ router.get(
 
         const validator = jsonschema.validate(
             request,
-            jobSearch,
+            jobSearch, // TODO: update variable name in require to include "schema"
             { required: true }
         );
 
@@ -83,7 +83,7 @@ router.get(
     }
 );
 
-/** GET /:id => { job: { id, title, salary, equity, companyHandle } }
+/** GET /:id => { job: { id, title, salary, equity, companyHandle } } // TODO: incl. add'l company data here too
  *
  * Authorization required: none
  */
@@ -139,7 +139,7 @@ router.delete(
     async function (req, res, next) {
         await Job.remove(req.params.id);
 
-        return res.json({ deleted: parseInt(req.params.id) })
+        return res.json({ deleted: parseInt(req.params.id) }) // TODO: change to "+"
     }
 )
 
