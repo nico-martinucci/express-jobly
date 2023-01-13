@@ -28,7 +28,6 @@ describe("create", function () {
     };
     
     test("works", async function () {
-        console.log("value of testJobIds at top of 'works' test: ", testJobIds);
         const job = await Job.create(newJob);
 
         expect(job).toEqual({

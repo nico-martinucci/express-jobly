@@ -418,7 +418,6 @@ describe("DELETE /users/:username", function () {
 
 describe("POST /users/:username/jobs/:id", function () {
 	test("works for admin", async function () {
-		console.log("value of testJobIds at top of 'works for admin' test", testJobIds)
 		const resp = await request(app)
 			.post(`/users/u2/jobs/${testJobIds.another1}`)
 			.set("authorization", `Bearer ${adminToken}`);

@@ -221,7 +221,6 @@ class User {
 	 * Throws NotFoundError if either username or jobId is invalid
 	 */
 	static async apply(username, jobId) {
-		console.log("username that might be too long: ", username);
 		let result;
 		try {
 			result = await db.query(
@@ -233,7 +232,8 @@ class User {
 		} catch(err) {
 			if (err.detail.includes("not present")) {
 				throw new NotFoundError("Invalid username or jobId.")
-			} else if (err.detail.includes("already exists")) {
+			}
+			if (err.detail.includes("already exists")) {
 				throw new BadRequestError("Job already applied to by this user.")
 			}
 
