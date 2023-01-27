@@ -147,6 +147,8 @@ function sqlForJobSearchFilter({ title, minSalary, hasEquity, company_handle }) 
 	return query;
 }
 
+
+
 module.exports = {
 	sqlForPartialUpdate,
 	sqlForCompanySearchFilter,

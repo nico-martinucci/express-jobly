@@ -146,7 +146,7 @@ class User {
 			[username]
 		)
 
-		user.jobs = jobsRes.rows.map(j => j.jobId);
+		user.applications = jobsRes.rows.map(j => j.jobId);
 
 		return user;
 	}
