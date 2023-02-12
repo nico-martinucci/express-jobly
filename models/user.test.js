@@ -141,10 +141,10 @@ describe("get", function () {
 			lastName: "U1L",
 			email: "u1@email.com",
 			isAdmin: false,
-			jobs: [testJobIds.testJob1, testJobIds.testJob2]
+			applications: [testJobIds.testJob1, testJobIds.testJob2]
 		});
 	});
-	
+
 	test("works for user w/o jobs applied", async function () {
 		let user = await User.get("u2");
 		expect(user).toEqual({
@@ -153,7 +153,7 @@ describe("get", function () {
 			lastName: "U2L",
 			email: "u2@email.com",
 			isAdmin: false,
-			jobs: []
+			applications: []
 		});
 	});
 
@@ -255,7 +255,7 @@ describe("apply", function () {
 		try {
 			await User.apply("badUsername", testJobIds.another1);
 			throw new Error("fail test, you shouldn't get here");
-		} catch(err) {
+		} catch (err) {
 			expect(err instanceof NotFoundError).toBeTruthy();
 		}
 	});
@@ -264,16 +264,16 @@ describe("apply", function () {
 		try {
 			await User.apply("u1", -1);
 			throw new Error("fail test, you shouldn't get here");
-		} catch(err) {
+		} catch (err) {
 			expect(err instanceof NotFoundError).toBeTruthy();
 		}
 	});
-	
+
 	test("bad request error if dupe application", async function () {
 		try {
 			await User.apply("u1", testJobIds.testJob1);
 			throw new Error("fail test, you shouldn't get here");
-		} catch(err) {
+		} catch (err) {
 			expect(err instanceof BadRequestError).toBeTruthy();
 		}
 	});
